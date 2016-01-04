@@ -31,6 +31,11 @@ angular.module('pkb.filters', [])
           return "#/gene/" + $window.encodeURIComponent(uri) + "?tab=phenotypes";
       };
 })
+.filter('linkToPhenotype', function ($window) {
+      return function (uri) {
+          return "#/phenotype/" + $window.encodeURIComponent(uri);
+      };
+})
 .filter('linkToTaxon', function ($window) {
       return function (uri) {
           return "#/taxon/" + $window.encodeURIComponent(uri);

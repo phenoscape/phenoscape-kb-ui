@@ -50,6 +50,10 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
       );
     };
 })
+.controller('PhenotypeController', function ($scope, $routeParams, Term, TaxaWithPhenotype) {
+    $scope.termID = $routeParams.phenotype;
+    $scope.term = Term.query({'iri': $scope.termID});
+})
 .controller('EntityController', function ($scope, $routeParams, Term, TaxaWithPhenotype, EntityPresence, EntityAbsence, EntityPhenotypeGenes, EntityExpressionGenes, OntologyTermSearch, Vocab, OMN, TaxonPhenotypesQuery) {
     $scope.termID = $routeParams.term;
     $scope.term = Term.query({'iri': $scope.termID});
