@@ -1,1 +1,1 @@
-<span class="taxon-name" ng-class="{'extinct': (taxon.extinct === true)}" title="{{taxon['@id']}}">{{taxon.label}}</span>
+<span class="taxon-name" ng-class="{'extinct': (taxonInfo.extinct === true)}" title="{{taxonInfo['@id']}}"><span ng-class="{'genus-species': isGenusOrSpecies(taxonInfo)}">{{taxonInfo.label}}</span></span>

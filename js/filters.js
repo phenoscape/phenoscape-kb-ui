@@ -3,11 +3,6 @@
 /* Filters */
 
 angular.module('pkb.filters', [])
-.filter('interpolate', ['version', function(version) {
-    return function(text) {
-      return String(text).replace(/\%VERSION\%/mg, version);
-    }
-}])
 .filter('encodeURI', function ($window) {
       return $window.encodeURIComponent;
 })
@@ -19,6 +14,11 @@ angular.module('pkb.filters', [])
 .filter('linkToEntity', function ($window) {
       return function (uri) {
           return "#/entity/" + $window.encodeURIComponent(uri);
+      };
+})
+.filter('isEntity', function ($window) {
+      return function (uri) {
+          return uri.indexOf("http://purl.obolibrary.org/obo/UBERON_") > -1;
       };
 })
 .filter('linkToGene', function ($window) {
@@ -35,6 +35,26 @@ angular.module('pkb.filters', [])
       return function (uri) {
           return "#/phenotype/" + $window.encodeURIComponent(uri);
       };
+})
+.filter('linkToStudy', function ($window) {
+    return function (uri) {
+        return "#/study/" + $window.encodeURIComponent(uri);
+    };
+})
+.filter('linkToStudyTaxaDownload', function ($window) {
+    return function (uri) {
+        return "http://kb.phenoscape.org/api/study/taxa?limit=0&iri=" + $window.encodeURIComponent(uri);
+    };
+})
+.filter('linkToStudyPhenotypesDownload', function ($window) {
+    return function (uri) {
+        return "http://kb.phenoscape.org/api/study/phenotypes?limit=0&iri=" + $window.encodeURIComponent(uri);
+    };
+})
+.filter('linkToStudyNexmlDownload', function ($window) {
+    return function (uri) {
+        return "http://kb.phenoscape.org/api/study/matrix?iri=" + $window.encodeURIComponent(uri);
+    };
 })
 .filter('linkToTaxon', function ($window) {
       return function (uri) {
@@ -109,11 +129,28 @@ angular.module('pkb.filters', [])
 .filter('modSourceLabel', function () {
     return function (uri) {
         if (uri.indexOf("http://www.informatics.jax.org/reference/summary?id=") > -1) {
-            return uri.replace("http://www.informatics.jax.org/reference/summary?id=", "MGI:")
+            return uri.replace("http://www.informatics.jax.org/reference/summary?id=", "MGI:");
         } else if (uri.indexOf("http://zfin.org/") > -1) {
-            return uri.replace("http://zfin.org/", "ZFIN:")
+            return uri.replace("http://zfin.org/", "ZFIN:");
+        } else if (uri.indexOf("http://www.xenbase.org/common/ViewImageActionNonAdmin.do?imageId=") > -1) {
+            return uri.replace("http://www.xenbase.org/common/ViewImageActionNonAdmin.do?imageId=", "Xenbase:");
         } else {
             return uri;
+        }
+    };
+})
+.filter('geneIDToImage', function () {
+    return function (uri) {
+        if (uri.indexOf("http://www.informatics.jax.org") > -1) {
+            return "http://phylopic.org/assets/images/submissions/6b2b98f6-f879-445f-9ac2-2c2563157025.64.png";
+        } else if (uri.indexOf("http://zfin.org/") > -1) {
+            return "http://phylopic.org/assets/images/submissions/199829d3-183a-4eb3-a35a-a8705d28cb56.64.png";
+        } else if (uri.indexOf("http://www.xenbase.org/") > -1) {
+            return "http://phylopic.org/assets/images/submissions/cd0f49a1-4adf-448e-859c-b703a73b9481.64.png";
+        } else if (uri.indexOf("http://www.ncbi.nlm.nih.gov") > -1) {
+            return "http://phylopic.org/assets/images/submissions/a9f4ebd5-53d7-4de9-9e66-85ff6c2d513e.64.png";
+        } else {
+            return "";
         }
     };
 })
@@ -122,6 +159,10 @@ angular.module('pkb.filters', [])
           var prefixes = {
               "http://purl.obolibrary.org/obo/UBERON_": "UBERON:",
               "http://purl.obolibrary.org/obo/VTO_": "VTO:",
+              "http://zfin.org/": "ZFIN:",
+              "http://www.informatics.jax.org/marker/MGI:": "MGI:",
+              "http://xenbase.org/": "Xenbase:",
+              "http://www.ncbi.nlm.nih.gov/gene/": "NCBI:gene:",
               "http://purl.obolibrary.org/obo/": "obo:",
               "http://purl.org/phenoscape/uuid/": "uuid:"
           }

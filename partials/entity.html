@@ -1,18 +1,27 @@
-<h2 cg-busy="term.$promise"><span class="badge">Anatomy</span> {{term.label}} <small>{{termID | prefixedURI}}</small></h2>
+<h2 cg-busy="term.$promise"><span class="badge">Anatomy</span> {{term.label}} <small><a href="{{termID}}" target="_blank" class="link-no-color">{{termID | prefixedURI}}</a></small></h2>
 <p>{{term.definition}}</p>
 <div class="row">
     <div class= "col-sm-12">
         <tabset>
-            <tab heading="Classification">
+            <tab heading="Classification" active="tabs.classification.active" select="activateTab('classification')">
                 <div class="panel panel-default top-buffer">
                     <div class="panel-body">
-                        <classification iri="termID" link-filter="linkToEntity"></classification>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <classification iri="termID" defined-by="http://purl.obolibrary.org/obo/uberon.owl" link-filter="linkToEntity"></classification>
+                            </div>
+                            <div class="col-sm-8" style="border-left: 1px solid #ddd" ng-show="term.relationships.length > 0">
+                                <ul class="list-unstyled">
+                                    <li ng-repeat="rel in term.relationships" ng-show="rel.value['@id'] | isEntity"><em>{{rel.property.label}}</em>: <a href="{{rel.value['@id'] | linkToEntity}}">{{rel.value.label}}</a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </tab>
-            <tab heading="Taxa">
+            <tab heading="Taxa" active="tabs.taxa.active" select="activateTab('taxa')">
                 <tabset type="pills" class="top-buffer">
-                    <tab>
+                    <tab active="taxaTabs.phenotypes.active" select="activateTaxaTab('phenotypes')">
                         <tab-heading>Phenotypes <span class="badge">{{taxaWithPhenotypesTotal.total}}</span></tab-heading>
                         <div class="panel panel-default top-buffer">
                             <div class="panel-heading"><h4>Taxa exhibiting phenotypes for {{term.label}}</h4></div>
@@ -44,7 +53,7 @@
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="taxon in taxaWithPhenotypes.results">
-                                        <td><a href="{{taxon['@id'] | linkToTaxon}}">{{taxon.label}}</a></td>
+                                        <td><a href="{{taxon['@id'] | linkToTaxon}}"><taxon-name iri="taxon['@id']"></taxon-name></a></td>
                                         <td><a href="{{ {taxon: taxon, entity: {'@id': termID}, quality: filters.phenotypesQualityFilter} | linkToTaxonPhenotypeProfile}}">View phenotypes <counted-phenotypes-for-taxon taxon="taxon" entity="{'@id': termID}" quality="filters.phenotypesQualityFilter"/></a></td>
                                     </tr>
                                 </tbody>
@@ -56,7 +65,7 @@
                         </div>
                         <p><label>Download all results:</label> <a class="btn btn-info btn-xs" target="_blank" href="{{ {entity: {'@id': termID}, quality: filters.phenotypesQualityFilter, in_taxon: filters.phenotypesTaxonFilter} | linkToTaxaWithPhenotypeDownload}}" role="button">Text</a></p>
                     </tab>
-                    <tab>
+                    <tab active="taxaTabs.presence.active" select="activateTaxaTab('presence')">
                         <tab-heading>Presence <span class="badge">{{taxaWithPresenceTotal.total}}</span></tab-heading>
                         <div class="panel panel-default top-buffer">
                             <div class="panel-heading"><h4>Taxa exhibiting presence of {{term.label}}</h4></div>
@@ -82,7 +91,7 @@
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="taxon in taxaWithPresence.results">
-                                        <td><a href="{{taxon['@id'] | linkToTaxon}}">{{taxon.label}}</a></td>
+                                        <td><a href="{{taxon['@id'] | linkToTaxon}}"><taxon-name iri="taxon['@id']"></taxon-name></a></td>
                                         <td><a href="{{ {entity: {'@id': termID}, taxon: taxon} | linkToTaxonPresencePhenotypeProfile}}">View phenotypes <counted-presence-or-absence-for-taxon taxon="taxon" entity="{'@id': termID}" kind="presence"/></a></td>
                                     </tr>
                                 </tbody>
@@ -94,7 +103,7 @@
                         </div>
                         <p><label>Download all results:</label> <a class="btn btn-info btn-xs" target="_blank" href="http://kb.phenoscape.org/kb/entity/presence?limit=0&amp;entity={{termID | encodeURI}}" role="button">Text</a></p>
                     </tab>
-                    <tab>
+                    <tab active="taxaTabs.absence.active" select="activateTaxaTab('absence')">
                         <tab-heading>Absence <span class="badge">{{taxaWithAbsenceTotal.total}}</span></tab-heading>
                         <div class="panel panel-default top-buffer">
                             <div class="panel-heading"><h4>Taxa exhibiting absence of {{term.label}}</h4></div>
@@ -120,7 +129,7 @@
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="taxon in taxaWithAbsence.results">
-                                        <td><a href="{{taxon['@id'] | linkToTaxon}}">{{taxon.label}}</a></td>
+                                        <td><a href="{{taxon['@id'] | linkToTaxon}}"><taxon-name iri="taxon['@id']"></taxon-name></a></td>
                                         <td><a href="{{ {entity: {'@id': termID}, taxon: taxon} | linkToTaxonAbsencePhenotypeProfile}}">View phenotypes <counted-presence-or-absence-for-taxon taxon="taxon" entity="{'@id': termID}" kind="absence"/></a></td>
                                     </tr>
                                 </tbody>
@@ -134,13 +143,13 @@
                     </tab>
                 </tabset>
             </tab>
-            <tab heading="Genes">
+            <tab heading="Genes" active="tabs.genes.active" select="activateTab('genes')">
                 <tabset type="pills" class="top-buffer">
-                    <tab>
-                        <tab-heading>Phenotype <span class="badge">{{phenotypeGenesTotal.total}}</span></tab-heading>
+                    <tab active="genesTabs.phenotypes.active" select="activateGenesTab('phenotypes')">
+                        <tab-heading>Phenotypes <span class="badge">{{phenotypeGenesTotal.total}}</span></tab-heading>
                         <div class="panel panel-default top-buffer">
                             <div class="panel-heading">
-                                <h4>Genes affecting phenotype of this structure</h4>
+                                <h4>Genes affecting phenotypes for this structure</h4>
                             </div>
                             <div class="panel-body">
                                 <p>These genes have been annotated with phenotypes affecting <mark>{{term.label}}</mark> (directly or via inference).</p>
@@ -153,12 +162,14 @@
                             <table class="table table-condensed table-striped" cg-busy="phenotypeGenes.$promise">
                                 <thead>
                                     <tr>
+                                        <th>Organism</th>
                                         <th>Gene</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="gene in phenotypeGenes.results">
-                                        <td><a href="{{gene['@id'] | linkToGene}}"><term-name iri="gene.label"></term-name></a></td>
+                                        <td><span class="common-taxon-group"><img ng-src="{{gene['@id'] | geneIDToImage}}"></span></td>
+                                        <td><a href="{{gene['@id'] | linkToGene}}"><span>{{gene.label}}</span></a></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -166,7 +177,7 @@
                         <pagination total-items="phenotypeGenesTotal.total" ng-model="phenotypeGenesPage" max-size="phenotypeGenesMaxSize" class="pagination-sm" boundary-links="true" rotate="false"  items-per-page="phenotypeGenesLimit" cg-busy="phenotypeGenesTotal.$promise" ng-change="phenotypeGenesPageChanged(phenotypeGenesPage)"></pagination>
                         <p><label>Download all results:</label> <a class="btn btn-info btn-xs" target="_blank" href="http://kb.phenoscape.org/kb/gene/affecting_entity_phenotype?limit=0&amp;iri={{termID | encodeURI}}&amp;parts={{phenotypeGenesSettings.includeParts}}" role="button">Text</a></p>
                     </tab>
-                    <tab>
+                    <tab active="genesTabs.expression.active" select="activateGenesTab('expression')">
                         <tab-heading>Expression <span class="badge">{{expressionGenesTotal.total}}</span></tab-heading>
                         <div class="panel panel-default top-buffer">
                             <div class="panel-heading">
@@ -178,12 +189,14 @@
                             <table class="table table-condensed table-striped" cg-busy="expressionGenes.$promise">
                                 <thead>
                                     <tr>
+                                        <th>Organism</th>
                                         <th>Gene</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="gene in expressionGenes.results">
-                                        <td><a href="{{gene['@id'] | linkToGene}}"><term-name iri="gene.label"></term-name></a></td>
+                                        <td><span class="common-taxon-group"><img ng-src="{{gene['@id'] | geneIDToImage}}"></span></td>
+                                        <td><a href="{{gene['@id'] | linkToGene}}"><span>{{gene.label}}</span></term-name></a></td>
                                     </tr>
                                 </tbody>
                             </table>

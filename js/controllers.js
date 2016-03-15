@@ -54,9 +54,56 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.termID = $routeParams.phenotype;
     $scope.term = Term.query({'iri': $scope.termID});
 })
-.controller('EntityController', function ($scope, $routeParams, Term, TaxaWithPhenotype, EntityPresence, EntityAbsence, EntityPhenotypeGenes, EntityExpressionGenes, OntologyTermSearch, Vocab, OMN, TaxonPhenotypesQuery) {
+.controller('EntityController', function ($scope, $routeParams, $location, Term, TaxaWithPhenotype, EntityPresence, EntityAbsence, EntityPhenotypeGenes, EntityExpressionGenes, OntologyTermSearch, Vocab, OMN, TaxonPhenotypesQuery) {
     $scope.termID = $routeParams.term;
     $scope.term = Term.query({'iri': $scope.termID});
+    
+    $scope.tabs = {
+        classification: {active: true},
+        taxa: {active: false},
+        genes: {active: false},
+    }
+    $scope.taxaTabs = {
+        phenotypes: {active: true},
+        presence: {active: false},
+        absence: {active: false}
+    }
+    $scope.genesTabs = {
+        phenotypes: {active: true},
+        expression: {active: false}
+    }
+    $scope.activateTab = function (tabname) {
+        if (_.has($scope.tabs, tabname)) {
+            $scope.tabs[tabname].active = true;
+            $location.search('tab', tabname);
+        }
+    }
+    $scope.activateTaxaTab = function (tabname) {
+        if (_.has($scope.taxaTabs, tabname)) {
+            $scope.taxaTabs[tabname].active = true;
+            $location.search('taxatab', tabname);
+        }
+    }
+    $scope.activateGenesTab = function (tabname) {
+        if (_.has($scope.genesTabs, tabname)) {
+            $scope.genesTabs[tabname].active = true;
+            $location.search('genestab', tabname);
+        }
+    }
+    // $scope.$on('$routeUpdate', function() {
+//         $scope.activateTab($location.search().tab);
+//         $scope.activateTaxaTab($location.search().taxatab);
+//         $scope.activateGenesTab($location.search().genestab);
+//     });
+    if ($routeParams.tab && _.has($scope.tabs, $routeParams.tab)) {
+        $scope.tabs[$routeParams.tab].active = true;
+    }
+    if ($routeParams.taxatab && _.has($scope.taxaTabs, $routeParams.taxatab)) {
+        $scope.taxaTabs[$routeParams.taxatab].active = true;
+    }
+    if ($routeParams.genestab && _.has($scope.genesTabs, $routeParams.genestab)) {
+        $scope.genesTabs[$routeParams.genestab].active = true;
+    }
     
     $scope.autocompleteTaxa = function (text) {
         return OntologyTermSearch.query({
@@ -190,7 +237,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.resetPhenotypeGenes();
     $scope.resetExpressionGenes();
 })
-.controller('TaxonController', function ($scope, $routeParams, $location, $log, $window, Taxon, TaxonPhenotypesQuery, VariationProfileQuery, EntityPresenceEvidence, EntityAbsenceEvidence, OntologyTermSearch, OMN, Vocab, Label) {
+.controller('TaxonController', function ($scope, $routeParams, $location, $log, $window, Taxon, TaxonPhenotypesQuery, VariationProfileQuery, EntityPresenceEvidence, EntityAbsenceEvidence, OntologyTermSearch, OMN, Vocab, Label, APIroot) {
     $scope.taxonID = $routeParams.taxon;
     $scope.taxon = Taxon.query({'iri': $scope.taxonID});
     $scope.filters = {
@@ -272,13 +319,13 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
                 params.quality = OMN.angled($scope.filters.phenotypesQualityFilter['@id']);
             }
             $scope.phenotypeProfileTotal = TaxonPhenotypesQuery.query(params);
-            var url = "http://kb.phenoscape.org/api/taxon/phenotypes?";
+            var url = APIroot + "/taxon/phenotypes?";
             var urlParams = ["limit=0"];
             if (params.entity) {
-                urlParams.push("entity=" + $window.encodeURIComponent(OMN.angled(params.entity)));
+                urlParams.push("entity=" + $window.encodeURIComponent(params.entity));
             }
             if (params.quality) {
-                urlParams.push("quality=" + $window.encodeURIComponent(OMN.angled(params.quality)));
+                urlParams.push("quality=" + $window.encodeURIComponent(params.quality));
             }
             urlParams.push("taxon=" + $window.encodeURIComponent(params.taxon));
             $scope.linkToTaxonPhenotypeProfileDownload = url + urlParams.join("&");
@@ -287,10 +334,10 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
             var url = null;
             if ($scope.filters.quality_type == 'entailing-presence') {
                 service = EntityPresenceEvidence;
-                url = "http://kb.phenoscape.org/api/entity/presence/evidence?";
+                url = APIroot + "/entity/presence/evidence?";
             } else {
                 service = EntityAbsenceEvidence;
-                url = "http://kb.phenoscape.org/api/entity/absence/evidence?";
+                url = APIroot + "/entity/absence/evidence?";
             }
             if ($scope.filters.phenotypesEntityFilter) {
                 params.entity = $scope.filters.phenotypesEntityFilter['@id'];
@@ -344,6 +391,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         classification: {active: true},
         phenotypes: {active: false},
         variation: {active: false},
+        similarity: {active: false},
         misc: {active: false}
     }
     $scope.activateTab = function (tabname) {
@@ -358,6 +406,48 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     if ($routeParams.tab && _.has($scope.tabs, $routeParams.tab)) {
         $scope.tabs[$routeParams.tab].active = true;
     }
+})
+.controller('StudyController', function ($scope, $routeParams, $location, $log, $window, Study, StudyTaxa, StudyPhenotypes, Vocab, Label) {
+    $scope.studyID = $routeParams.study;
+    $scope.study = Study.query({'iri': $scope.studyID});
+    
+    $scope.phenotypesPage = 1;
+    $scope.phenotypesLimit = 20;
+    $scope.phenotypesMaxSize = 3;
+    $scope.phenotypesPageChanged = function (newPage) {
+        $scope.phenotypesPage = newPage;
+        var params = {
+            iri: $scope.studyID, 
+            limit: $scope.phenotypesLimit, 
+            offset: ($scope.phenotypesPage - 1) * $scope.phenotypesLimit
+        };
+        $scope.phenotypes = StudyPhenotypes.query(params);
+    };
+    $scope.resetPhenotypes = function () {
+        var params = {iri: $scope.studyID, total: true};
+        $scope.phenotypesTotal = StudyPhenotypes.query(params);
+        $scope.phenotypesPageChanged(1);
+    }
+    $scope.resetPhenotypes();
+    
+    $scope.taxaPage = 1;
+    $scope.taxaLimit = 20;
+    $scope.taxaMaxSize = 3;
+    $scope.taxaPageChanged = function (newPage) {
+        $scope.taxaPage = newPage;
+        var params = {
+            iri: $scope.studyID, 
+            limit: $scope.taxaLimit, 
+            offset: ($scope.taxaPage - 1) * $scope.taxaLimit
+        };
+        $scope.taxa = StudyTaxa.query(params);
+    };
+    $scope.resetTaxa = function () {
+        var params = {iri: $scope.studyID, total: true};
+        $scope.taxaTotal = StudyTaxa.query(params);
+        $scope.taxaPageChanged(1);
+    }
+    $scope.resetTaxa();
 })
 .controller('GeneController', function ($scope, $routeParams, $location, Gene, GenePhenotypes, GeneExpression) {
     $scope.geneID = $routeParams.gene;
@@ -677,7 +767,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.queryGenes();
     $scope.queryTotal();
 })
-.controller('OntoTraceController', function ($scope, OntologyTermSearch, $http, Vocab, $filter) {
+.controller('OntoTraceController', function ($scope, OntologyTermSearch, $http, Vocab, $filter, APIroot) {
     $scope.ontotraceURL = null;
     $scope.inputType = 'simple';
     $scope.ontotraceSettings = {
@@ -688,7 +778,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.queryTaxonExpression = null;
     $scope.$watch('queryEntityLabelExpression', function (value) {
         if (value) {
-            $http.get('http://kb.phenoscape.org/api/term/resolve_label_expression', {params: {expression: value}}).then(
+            $http.get(APIroot + '/term/resolve_label_expression', {params: {expression: value}}).then(
             function (response) { 
                 $scope.entityExpressionErrorMessage = null;
                 $scope.queryEntityExpression = response.data;
@@ -704,7 +794,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     });
     $scope.$watch('queryTaxonLabelExpression', function (value) {
         if (value) {
-            $http.get('http://kb.phenoscape.org/api/term/resolve_label_expression', {params: {expression: value}}).then(
+            $http.get(APIroot + '/term/resolve_label_expression', {params: {expression: value}}).then(
             function (response) { 
                 $scope.taxonExpressionErrorMessage = null;
                 $scope.queryTaxonExpression = response.data;
@@ -741,9 +831,9 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     }
     $scope.$watchGroup(['queryEntity', 'queryTaxon', 'queryEntityExpression', 'queryTaxonExpression', 'inputType', 'ontotraceSettings.includeAllCharacters', 'ontotraceSettings.includeParts'], function (value) {
         if ($scope.inputType == 'simple' && $scope.queryEntity && $scope.queryTaxon) {
-            $scope.ontotraceURL = "http://kb.phenoscape.org/kb/ontotrace?entity=" + prepareTerm($scope.queryEntity) + "&taxon=" + prepareTerm($scope.queryTaxon) + "&variable_only=" + !$scope.ontotraceSettings.includeAllCharacters + "&parts=" + $scope.ontotraceSettings.includeParts;
+            $scope.ontotraceURL = APIroot + "/ontotrace?entity=" + prepareTerm($scope.queryEntity) + "&taxon=" + prepareTerm($scope.queryTaxon) + "&variable_only=" + !$scope.ontotraceSettings.includeAllCharacters + "&parts=" + $scope.ontotraceSettings.includeParts;
         } else if ($scope.inputType == 'expression' && $scope.queryEntityExpression && $scope.queryTaxonExpression) {
-            $scope.ontotraceURL = "http://kb.phenoscape.org/kb/ontotrace?entity=" + $filter('encodeURI')($scope.queryEntityExpression) + "&taxon=" + $filter('encodeURI')($scope.queryTaxonExpression) + "&variable_only=" + !$scope.ontotraceSettings.includeAllCharacters + "&parts=false";
+            $scope.ontotraceURL = APIroot + "/ontotrace?entity=" + $filter('encodeURI')($scope.queryEntityExpression) + "&taxon=" + $filter('encodeURI')($scope.queryTaxonExpression) + "&variable_only=" + !$scope.ontotraceSettings.includeAllCharacters + "&parts=false";
         } else {
             $scope.ontotraceURL = null;
         }
@@ -868,10 +958,27 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.group = TaxonCommonGroup.query({iri: $scope.taxon});
 })
 .controller('TaxonNameController', function ($scope, Taxon) {
-    $scope.taxon = Taxon.query({iri: $scope.iri});
+    $scope.$watch('iri', function (value) {
+        if ($scope.iri) {
+            $scope.taxonInfo = Taxon.query({iri: $scope.iri});
+        }
+    });
+    $scope.isGenusOrSpecies = function (taxon) {
+        if (taxon) {
+            if (taxon.rank) {
+                return (taxon.rank['@id'] == "http://purl.obolibrary.org/obo/TAXRANK_0000005") || (taxon.rank['@id'] == "http://purl.obolibrary.org/obo/TAXRANK_0000006");
+            } else {
+                return false;
+            }
+        }
+    };
 })
 .controller('TermNameController', function ($scope, Label) {
-    $scope.term = Label.query({iri: $scope.iri});
+    $scope.$watch('iri', function (value) {
+        if ($scope.iri) {
+            $scope.term = Label.query({iri: $scope.iri});
+        }
+    });
 })
 .controller('CountedPhenotypesForTaxonController', function ($scope, TaxonPhenotypesQuery, OMN) {
     var params = {total: true};
@@ -893,11 +1000,13 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     }
     
 })
-.controller('CharacterDescriptionAnnotationController', function ($scope, CharacterDescriptionWithAnnotation) {
+.controller('CharacterDescriptionAnnotationController', function ($scope, Label, PhenotypeAnnotations, CharacterDescriptionWithAnnotation) {
     $scope.description = CharacterDescriptionWithAnnotation.query({iri: $scope.iri});
+//    $scope.phenotype = Label.query({iri: $scope.iri});
+    $scope.eqs = PhenotypeAnnotations.query({iri: $scope.iri});
 })
 .controller('ClassificationController', function ($scope, $filter, Classification) {
-    $scope.classification = Classification.query({iri: $scope.iri})
+    $scope.classification = Classification.query({iri: $scope.iri, definedBy: $scope.definedBy});
     $scope.linkMaker = $filter($scope.linkFilter);
 })
 .controller('SimilarityViewController', function ($scope, SimilarityMatches, SimilarityAnnotationMatches, ProfileSize, SimilarityCorpusSize) {
@@ -907,13 +1016,14 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.pageChanged = function () {
         $scope.queryTopMatches();
     }
-    //$scope.matchesTotal = SimilarityCorpusSize.query(); //FIXME this query is too slow!
-    $scope.matchesTotal = {total: 1000};
+    $scope.matchesTotal = SimilarityCorpusSize.query({corpus_graph: $scope.corpusGraph}); //FIXME this query is too slow!
+    //$scope.matchesTotal = {total: 1000};
     $scope.queryTopMatches = function () {
-        $scope.queryProfileSize = ProfileSize.query({iri: $scope.gene['@id']});
+        $scope.queryProfileSize = ProfileSize.query({iri: $scope.subject['@id']});
         $scope.selectedMatch = null;
         $scope.topMatches = SimilarityMatches.query({
-            iri: $scope.gene['@id'],
+            corpus_graph: $scope.corpusGraph,
+            iri: $scope.subject['@id'],
             limit: $scope.matchesLimit,
             offset: ($scope.matchesPage - 1) * $scope.matchesLimit
         });
@@ -923,7 +1033,9 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         $scope.annotationMatches = null;
         $scope.selectedMatchProfileSize = ProfileSize.query({iri: match.match_profile['@id']});
         $scope.annotationMatches = SimilarityAnnotationMatches.query({
-            query_iri: $scope.gene['@id'], 
+            corpus_graph: $scope.corpusGraph,
+            query_graph: $scope.queryGraph,
+            query_iri: $scope.subject['@id'], 
             corpus_iri: match.match_profile['@id']}
         );
     };
@@ -933,7 +1045,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
 //    $scope.matchesPage = 1;
 //    $scope.selectedMatchProfileSize = null;
     
-    $scope.$watch("gene['@id']", function (value) {
+    $scope.$watch("subject['@id']", function (value) {
         if (value) {
             $scope.queryTopMatches();
         }
