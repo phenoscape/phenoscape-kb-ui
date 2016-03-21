@@ -21,6 +21,29 @@ angular.module('pkb.filters', [])
           return uri.indexOf("http://purl.obolibrary.org/obo/UBERON_") > -1;
       };
 })
+.filter('linkToPhenotype', function ($window) {
+      return function (uri) {
+          return "#/phenotype/" + $window.encodeURIComponent(uri);
+      };
+})
+.filter('linkToGenesWithAnatomyPhenotype', function ($window) {
+    return function (entity, quality) {
+        var qParam = "";
+        if (quality) {
+            qParam = "&genephenotypes.quality=" + $window.encodeURIComponent(quality)
+        }
+        return "#/entity/" + $window.encodeURIComponent(entity) + "?tab=genes&genestab=phenotypes" + qParam;
+    }
+})
+.filter('linkToTaxaWithAnatomyPhenotype', function ($window) {
+    return function (entity, quality) {
+        var qParam = "";
+        if (quality) {
+            qParam = "&phenotypes.quality=" + $window.encodeURIComponent(quality)
+        }
+        return "#/entity/" + $window.encodeURIComponent(entity) + "?tab=taxa&taxatab=phenotypes" + qParam;
+    }
+})
 .filter('linkToGene', function ($window) {
       return function (uri) {
           return "#/gene/" + $window.encodeURIComponent(uri);
@@ -159,6 +182,8 @@ angular.module('pkb.filters', [])
           var prefixes = {
               "http://purl.obolibrary.org/obo/UBERON_": "UBERON:",
               "http://purl.obolibrary.org/obo/VTO_": "VTO:",
+              "http://purl.obolibrary.org/obo/MP_": "MP:",
+              "http://purl.obolibrary.org/obo/HP_": "HP:",
               "http://zfin.org/": "ZFIN:",
               "http://www.informatics.jax.org/marker/MGI:": "MGI:",
               "http://xenbase.org/": "Xenbase:",

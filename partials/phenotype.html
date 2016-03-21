@@ -1,11 +1,36 @@
-<h2 cg-busy="term.$promise"><span class="badge">Phenotype</span> {{term.label}} <small>{{termID}}</small></h2>
+<h2 cg-busy="term.$promise"><span class="badge">Phenotype</span> {{term.label}} <small>{{termID | prefixedURI}}</small></h2>
 <div class="row">
     <div class= "col-sm-12">
         <tabset>
             <tab heading="Classification">
                 <div class="panel panel-default top-buffer">
                     <div class="panel-body">
-                        <classification iri="termID" link-filter="linkToEntity"></classification>
+                        <classification iri="termID" link-filter="linkToPhenotype"></classification>
+                    </div>
+                </div>
+            </tab>
+            <tab heading="Related data">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="panel panel-default top-buffer">
+                            <div class="panel-heading">Anatomical structure</div>
+                            <button type="button" class="btn btn-default btn-xs selection-item-button" ng-repeat="entity in eq.entity" ng-click="selectSearchEntity(entity)" ng-class="{ 'btn-primary': (searchEntity == entity),  'btn-default': (searchEntity != entity)}"><term-name iri="entity"></term-name></button>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Phenotypic quality</div>
+                            <button type="button" class="btn btn-default btn-xs selection-item-button" ng-repeat="quality in eq.quality" ng-click="selectSearchQuality(quality)" ng-class="{ 'btn-primary': (searchQuality == quality),  'btn-default': (searchQuality != quality)}"><term-name iri="quality"></term-name></button>
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        <h4>Data related to <term-name iri="searchEntity"></term-name>, <term-name iri="searchQuality"></term-name></h4>
+                        <ul>
+                            <li>
+                                <p><span class="badge">{{taxaWithPhenotypesTotal.total}} </span> <a href="{{searchEntity | linkToTaxaWithAnatomyPhenotype: searchQuality}}">Taxa with phenotype data</a></p>
+                            </li>
+                            <li>
+                                <p><span class="badge">{{genesWithPhenotypesTotal.total}} </span> <a href="{{searchEntity | linkToGenesWithAnatomyPhenotype: searchQuality}}">Genes with phenotype data</a></p>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </tab>

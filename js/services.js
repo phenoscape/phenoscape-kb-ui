@@ -241,21 +241,21 @@ angular.module('pkb.services', ['ngResource'])
 			query: {
 				method: 'GET',
 				headers: {'Accept': 'application/json'}
-		}})
+		}});
 	})
 	.factory('ResolveLabelExpression', function ($resource, APIroot) {
 		return $resource(APIroot + '/term/resolve_label_expression', {}, {
 			query: {
 				method: 'GET',
 				headers: {'Accept': 'application/json'}
-		}})
+		}});
 	})
 	.factory('AnnotationSummary', function ($resource, APIroot) {
 		return $resource(APIroot + '/kb/annotation_summary', {}, {
 			query: {
 				method: 'GET',
 				headers: {'Accept': 'application/json'}
-		}})
+		}});
 	})
     .factory('ScigraphAnnotator', function ($resource, APIroot) {
         return $resource('http://kb.phenoscape.org/scigraph/annotations/entities', {}, {
@@ -263,21 +263,30 @@ angular.module('pkb.services', ['ngResource'])
                 method: 'GET',
                 headers: {'Accept': 'application/json'},
                 isArray: true
-        }})
+        }});
     })
     .factory('StudyTaxa', function ($resource, APIroot) {
         return $resource(APIroot + '/study/taxa', {}, {
 			query: {
 				method: 'GET',
 				headers: {'Accept': 'application/json'}
-		}})
+		}});
     })
     .factory('StudyPhenotypes', function ($resource, APIroot) {
         return $resource(APIroot + '/study/phenotypes', {}, {
 			query: {
 				method: 'GET',
 				headers: {'Accept': 'application/json'}
-		}})
+		}});
+    })
+    .factory('EQsForPhenotype', function ($resource, APIroot) {
+        return $resource(APIroot + '/phenotype/nearest_eq', {}, {
+            query: {
+                method: 'GET',
+                headers: {'Accept': 'application/json'},
+                isArray: false
+            }
+        });
     })
     .factory('Vocab', function () {
         return {

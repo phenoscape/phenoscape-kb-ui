@@ -50,11 +50,49 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
       );
     };
 })
-.controller('PhenotypeController', function ($scope, $routeParams, Term, TaxaWithPhenotype) {
+.controller('PhenotypeController', function ($scope, $routeParams, Term, TaxaWithPhenotype, EntityPhenotypeGenes, EQsForPhenotype, OMN) {
     $scope.termID = $routeParams.phenotype;
-    $scope.term = Term.query({'iri': $scope.termID});
+    $scope.term = Term.query({iri: $scope.termID});
+    $scope.eq = EQsForPhenotype.query({iri: $scope.termID});
+    $scope.selectSearchEntity = function (term) {
+        $scope.searchEntity = term;
+    };
+    $scope.selectSearchQuality = function (term) {
+        $scope.searchQuality = term;
+    }
+    $scope.$watch('eq.entity', function (newValue) {
+        if (newValue && newValue.length > 0) {
+            var entity = newValue[0];
+            if (entity != $scope.searchEntity) { $scope.searchEntity = entity; }
+        } else {
+            $scope.searchEntity = null;
+        }
+    });
+    $scope.$watch('eq.quality', function (newValue) {
+        if (newValue && newValue.length > 0) {
+            var quality = newValue[0];
+            if (quality != $scope.searchQuality) { $scope.searchQuality = quality; }
+        } else {
+            $scope.searchQuality = null;
+        }
+    });
+    $scope.$watchGroup(['searchEntity', 'searchQuality'], function (newValues, oldValues) {
+        if ($scope.searchEntity && $scope.searchQuality) {
+            var params = {
+                entity: OMN.angled($scope.searchEntity), 
+                quality: OMN.angled($scope.searchQuality),
+                total: true
+            };
+            $scope.taxaWithPhenotypesTotal = TaxaWithPhenotype.query(params);
+            var geneParams = 
+            $scope.genesWithPhenotypesTotal = EntityPhenotypeGenes.query({iri: $scope.searchEntity, quality: $scope.searchQuality, total: true});
+        }
+        else {
+            $scope.taxaWithPhenotypesTotal = null;
+        }
+    });
 })
-.controller('EntityController', function ($scope, $routeParams, $location, Term, TaxaWithPhenotype, EntityPresence, EntityAbsence, EntityPhenotypeGenes, EntityExpressionGenes, OntologyTermSearch, Vocab, OMN, TaxonPhenotypesQuery) {
+.controller('EntityController', function ($scope, $routeParams, $location, Term, TaxaWithPhenotype, EntityPresence, EntityAbsence, EntityPhenotypeGenes, EntityExpressionGenes, OntologyTermSearch, Vocab, OMN, TaxonPhenotypesQuery, Label) {
     $scope.termID = $routeParams.term;
     $scope.term = Term.query({'iri': $scope.termID});
     
@@ -127,8 +165,24 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     
     $scope.filters = {
         phenotypesTaxonFilter: null,
-        phenotypesQualityFilter: null
+        phenotypesQualityFilter: null,
+        genePhenotypesQualityFilter: null
     };
+    if ($routeParams['phenotypes.taxon']) {
+        Label.query({'iri': $routeParams['phenotypes.taxon']}).$promise.then(function (response) {
+            $scope.filters.phenotypesTaxonFilter = response;
+        });
+    }
+    if ($routeParams['phenotypes.quality']) {
+        Label.query({'iri': $routeParams['phenotypes.quality']}).$promise.then(function (response) {
+            $scope.filters.phenotypesQualityFilter = response;
+        });
+    }
+    if ($routeParams['genephenotypes.quality']) {
+        Label.query({'iri': $routeParams['genephenotypes.quality']}).$promise.then(function (response) {
+            $scope.filters.genePhenotypesQualityFilter = response;
+        });
+    }
 
     $scope.taxaWithPhenotypesPage = 1;
     $scope.taxaWithPhenotypesMaxSize = 3;
@@ -157,6 +211,27 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     };
     $scope.$watchGroup(['filters.phenotypesTaxonFilter', 'filters.phenotypesQualityFilter'], function (newValues, oldValues) {
         $scope.resetTaxaWithPhenotypes();
+    });
+    $scope.$watch('filters.phenotypesTaxonFilter', function (value) {
+        if ($scope.filters.phenotypesTaxonFilter) {
+            $location.search('phenotypes.taxon', $scope.filters.phenotypesTaxonFilter['@id']);
+        } else {
+            $location.search('phenotypes.taxon', null);
+        }
+    });
+    $scope.$watch('filters.phenotypesQualityFilter', function (value) {
+        if ($scope.filters.phenotypesQualityFilter) {
+            $location.search('phenotypes.quality', $scope.filters.phenotypesQualityFilter['@id']);
+        } else {
+            $location.search('phenotypes.quality', null);
+        }
+    });
+    $scope.$watch('filters.genePhenotypesQualityFilter', function (value) {
+        if ($scope.filters.genePhenotypesQualityFilter) {
+            $location.search('genephenotypes.quality', $scope.filters.genePhenotypesQualityFilter['@id']);
+        } else {
+            $location.search('genephenotypes.quality', null);
+        }
     });
     
     $scope.filters.presenceTaxonFilter = null;
@@ -213,12 +288,33 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.phenotypeGenesSettings.includeParts = false;
     $scope.phenotypeGenesPageChanged = function (newPage) {
             $scope.phenotypeGenesPage = newPage;
-            $scope.phenotypeGenes = EntityPhenotypeGenes.query({iri: $scope.termID, limit: $scope.phenotypeGenesLimit, offset: ($scope.phenotypeGenesPage - 1) * $scope.phenotypeGenesLimit, parts: $scope.phenotypeGenesSettings.includeParts});
+            var params = {
+                iri: $scope.termID, 
+                limit: $scope.phenotypeGenesLimit, 
+                offset: ($scope.phenotypeGenesPage - 1) * $scope.phenotypeGenesLimit, 
+                parts: $scope.phenotypeGenesSettings.includeParts
+            };
+            if ($scope.filters.genePhenotypesQualityFilter) {
+                params.quality = $scope.filters.genePhenotypesQualityFilter['@id'];
+            }
+            $scope.phenotypeGenes = EntityPhenotypeGenes.query(params);
     };
     $scope.resetPhenotypeGenes = function() {
-        $scope.phenotypeGenesTotal = EntityPhenotypeGenes.query({iri: $scope.termID, total: true, parts: $scope.phenotypeGenesSettings.includeParts});
+        var params = {
+            iri: $scope.termID, 
+            total: true, 
+            parts: $scope.phenotypeGenesSettings.includeParts
+        };
+        if ($scope.filters.genePhenotypesQualityFilter) {
+            params.quality = $scope.filters.genePhenotypesQualityFilter['@id'];
+        }
+        $scope.phenotypeGenesTotal = EntityPhenotypeGenes.query(params);
         $scope.phenotypeGenesPageChanged(1);
     };
+    
+    $scope.$watchGroup(['phenotypeGenesSettings.includeParts', 'filters.genePhenotypesQualityFilter'], function (newValues, oldValues) {
+        $scope.resetPhenotypeGenes();
+    });
     
     $scope.expressionGenesPage = 1;
     $scope.expressionGenesMaxSize = 3;

@@ -4,7 +4,7 @@
     <div class= "col-sm-12">
         <tabset>
             <tab active="tabs.phenotypes.active" select="activateTab('phenotypes')">
-                <tab-heading>Phenotypes <span class="badge">{{phenotypes.results.length}}</span></tab-heading>
+                <tab-heading>Phenotypes <span class="badge">{{phenotypes.results.length}} </span></tab-heading>
                 <div class="panel panel-default top-buffer">
                     <div class="panel-heading">
                         <h4>Phenotypes associated with {{gene.label}}</h4>
@@ -21,7 +21,7 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="phenotype in phenotypes.results">
-                                <td>{{phenotype.label}}</td>
+                                <td><span title="{{phenotype['@id']}}"><a href="{{phenotype['@id'] | linkToPhenotype}}">{{phenotype.label}}</a></span></td>
                                 <td>
                                     <span ng-repeat="source in phenotype.sources"><a href="{{source['@id']}}" target="_blank">{{source['@id'] | modSourceLabel}}</a> </span>
                                 </td>
@@ -31,7 +31,7 @@
                 </div>
             </tab>
             <tab active="tabs.expression.active" select="activateTab('expression')">
-                <tab-heading>Expression <span class="badge">{{expression.results.length}}</span></tab-heading>
+                <tab-heading>Expression <span class="badge">{{expression.results.length}} </span></tab-heading>
                 <div class="alert alert-warning top-buffer" role="alert" ng-show="{{geneID.indexOf('www.informatics.jax.org') > -1}}">Due to a data glitch, labels are not currently available for mouse gene expression location terms. They are coming soon.</div>
                 <div class="panel panel-default top-buffer">
                     <div class="panel-heading">
