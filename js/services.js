@@ -39,6 +39,27 @@ angular.module('pkb.services', ['ngResource'])
 				headers: {'Accept': 'application/json'}
 		}})
 	})
+    .factory('QueryAnnotationsTaxon', function ($resource, APIroot) {
+		return $resource(APIroot + '/taxon/annotations', {}, {
+			query: {
+				method: 'GET',
+				headers: {'Accept': 'application/json'}
+		}})
+    })
+    .factory('QueryPhenotypeAnnotationsGene', function ($resource, APIroot) {
+		return $resource(APIroot + '/gene/phenotype_annotations', {}, {
+			query: {
+				method: 'GET',
+				headers: {'Accept': 'application/json'}
+		}})
+    })
+    .factory('QueryExpressionAnnotationsGene', function ($resource, APIroot) {
+		return $resource(APIroot + '/gene/expression_annotations', {}, {
+			query: {
+				method: 'GET',
+				headers: {'Accept': 'application/json'}
+		}})
+    })
 	.factory('AnatomicalTermSearch', function ($resource, APIroot) {
 		return $resource(APIroot + '/entity/search', {}, {
 			query: {

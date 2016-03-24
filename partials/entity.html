@@ -37,7 +37,7 @@
                                         </div>
                                         <div class="form-group" ng-class="{'has-success': filters.phenotypesQualityFilter, 'has-feedback': filters.phenotypesQualityFilter}">
                                             <label for="qualityInputPhenotypes">Quality</label>
-                                            <input id="qualityInputPhenotypes" type="text" ng-model="filters.phenotypesQualityFilter" placeholder="any phenotypic quality" typeahead="quality as quality.label for quality in autocompleteQuality($viewValue)" typeahead-loading="loadingQualityPhenotypes" typeahead-wait-ms="300" typeahead-editable="false" class="form-control">
+                                            <input id="qualityInputPhenotypes" type="text" ng-model="filters.phenotypesQualityFilter" placeholder="e.g. shape, size, position" typeahead="quality as quality.label for quality in autocompleteQuality($viewValue)" typeahead-loading="loadingQualityPhenotypes" typeahead-wait-ms="300" typeahead-editable="false" class="form-control">
                                             <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-show="filters.phenotypesQualityFilter"></span>
                                             <i ng-show="loadingQualityPhenotypes" class="glyphicon glyphicon-refresh"></i>
                                         </div>
@@ -157,7 +157,7 @@
                                     <form class="form-inline">
                                         <div class="form-group" ng-class="{'has-success': filters.genePhenotypesQualityFilter, 'has-feedback': filters.genePhenotypesQualityFilter}">
                                             <label for="qualityInputGenePhenotypes">Quality</label>
-                                            <input id="qualityInputGenePhenotypes" type="text" ng-model="filters.genePhenotypesQualityFilter" placeholder="any phenotypic quality" typeahead="quality as quality.label for quality in autocompleteQuality($viewValue)" typeahead-loading="loadingQualityGenePhenotypes" typeahead-wait-ms="300" typeahead-editable="false" class="form-control">
+                                            <input id="qualityInputGenePhenotypes" type="text" ng-model="filters.genePhenotypesQualityFilter" placeholder="e.g. shape, size, position" typeahead="quality as quality.label for quality in autocompleteQuality($viewValue)" typeahead-loading="loadingQualityGenePhenotypes" typeahead-wait-ms="300" typeahead-editable="false" class="form-control">
                                             <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-show="filters.genePhenotypesQualityFilter"></span>
                                             <i ng-show="loadingQualityGenePhenotypes" class="glyphicon glyphicon-refresh"></i>
                                         </div>

@@ -1149,4 +1149,170 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     
     
 })
+.controller('AnnotationsController', function ($scope, OntologyTermSearch, QueryAnnotationsTaxon, QueryPhenotypeAnnotationsGene, QueryExpressionAnnotationsGene, Vocab, OMN) {
+    $scope.filters = {
+        taxonFilter: null,
+        entityFilter: null,
+        qualityFilter: null
+    }
+    $scope.autocompleteTaxa = function (text) {
+        return OntologyTermSearch.query({
+            limit: 20,
+            text: text,
+            definedBy: Vocab.VTO
+        }).$promise.then(function (response) {
+            return response.results;
+        });
+    };
+    $scope.autocompleteEntity = function (text) {
+        return OntologyTermSearch.query({
+            limit: 20,
+            text: text,
+            definedBy: Vocab.Uberon
+        }).$promise.then(function (response) {
+            return response.results;
+        });
+    };
+    $scope.autocompleteQuality = function (text) {
+        return OntologyTermSearch.query({
+            limit: 20,
+            text: text,
+            definedBy: Vocab.PATO
+        }).$promise.then(function (response) {
+            return response.results;
+        });
+    };
+    
+    $scope.taxonAnnotationsPagination = {
+        page: 1,
+        maxSize: 3,
+        limit: 20
+    };
+    function taxonAnnotationQueryParams() {
+        var params = {};
+        if ($scope.filters.taxonFilter) {
+            params.in_taxon = $scope.filters.taxonFilter['@id'];
+        }
+        if ($scope.filters.entityFilter) {
+            params.entity = OMN.angled($scope.filters.entityFilter['@id']);
+        }
+        if ($scope.filters.qualityFilter) {
+            params.quality = OMN.angled($scope.filters.qualityFilter['@id']);
+        }
+        return params;
+    }
+    function taxonAnnotationsPageChanged() {
+        var params = taxonAnnotationQueryParams();
+        params.limit = $scope.taxonAnnotationsPagination.limit
+        params.offset = ($scope.taxonAnnotationsPagination.page - 1) * $scope.taxonAnnotationsPagination.limit;
+        // if ($scope.taxonAnnotations) {
+ //            $scope.taxonAnnotations.$cancelRequest();
+ //        }
+        $scope.taxonAnnotations = QueryAnnotationsTaxon.query(params);
+    };
+    function resetTaxonAnnotations () {
+        var params = taxonAnnotationQueryParams();
+        params.total = true;
+        // if ($scope.taxonAnnotationsTotal) {
+//             $scope.taxonAnnotationsTotal.$cancelRequest();
+//         }
+        $scope.taxonAnnotationsTotal = QueryAnnotationsTaxon.query(params);
+        $scope.taxonAnnotationsPagination.page = 1;
+        taxonAnnotationsPageChanged();
+    };
+    $scope.$watch('taxonAnnotationsPagination.page', function (newValue) {
+        taxonAnnotationsPageChanged();
+    });
+    $scope.$watchGroup(['filters.taxonFilter', 'filters.entityFilter', 'filters.qualityFilter'], function (newValues, oldValues) {
+        if (($scope.filters.taxonFilter === undefined) || ($scope.filters.entityFilter === undefined) || ($scope.filters.qualityFilter === undefined)) {
+            //still typing in autocomplete
+        } else {
+            resetTaxonAnnotations();
+            resetGenePhenotypeAnnotations();
+            resetGeneExpressionAnnotations();
+        }
+    });
+    
+    $scope.genePhenotypeAnnotationsPagination = {
+        page: 1,
+        maxSize: 3,
+        limit: 20
+    };
+    function genePhenotypeAnnotationQueryParams() {
+        var params = {};
+        if ($scope.filters.taxonFilter) {
+            params.in_taxon = $scope.filters.taxonFilter['@id'];
+        }
+        if ($scope.filters.entityFilter) {
+            params.entity = OMN.angled($scope.filters.entityFilter['@id']);
+        }
+        if ($scope.filters.qualityFilter) {
+            params.quality = OMN.angled($scope.filters.qualityFilter['@id']);
+        }
+        return params;
+    }
+    function genePhenotypeAnnotationsPageChanged() {
+        var params = genePhenotypeAnnotationQueryParams();
+        params.limit = $scope.genePhenotypeAnnotationsPagination.limit
+        params.offset = ($scope.genePhenotypeAnnotationsPagination.page - 1) * $scope.genePhenotypeAnnotationsPagination.limit;
+        // if ($scope.genePhenotypeAnnotations) {
+ //            $scope.genePhenotypeAnnotations.$cancelRequest();
+ //        }
+        $scope.genePhenotypeAnnotations = QueryPhenotypeAnnotationsGene.query(params);
+    };
+    function resetGenePhenotypeAnnotations() {
+        var params = genePhenotypeAnnotationQueryParams();
+        params.total = true;
+        // if ($scope.genePhenotypeAnnotationsTotal) {
+//             $scope.genePhenotypeAnnotationsTotal.$cancelRequest();
+//         }
+        $scope.genePhenotypeAnnotationsTotal = QueryPhenotypeAnnotationsGene.query(params);
+        $scope.genePhenotypeAnnotationsPagination.page = 1;
+        genePhenotypeAnnotationsPageChanged();
+    };
+    $scope.$watch('genePhenotypeAnnotationsPagination.page', function (newValue) {
+        genePhenotypeAnnotationsPageChanged();
+    });
+    
+    $scope.geneExpressionAnnotationsPagination = {
+        page: 1,
+        maxSize: 3,
+        limit: 20
+    };
+    function geneExpressionAnnotationQueryParams() {
+        var params = {};
+        if ($scope.filters.taxonFilter) {
+            params.in_taxon = $scope.filters.taxonFilter['@id'];
+        }
+        if ($scope.filters.entityFilter) {
+            params.entity = OMN.angled($scope.filters.entityFilter['@id']);
+        }
+        if ($scope.filters.qualityFilter) {
+            params.quality = OMN.angled($scope.filters.qualityFilter['@id']);
+        }
+        return params;
+    }
+    function geneExpressionAnnotationsPageChanged() {
+        var params = geneExpressionAnnotationQueryParams();
+        params.limit = $scope.geneExpressionAnnotationsPagination.limit
+        params.offset = ($scope.geneExpressionAnnotationsPagination.page - 1) * $scope.geneExpressionAnnotationsPagination.limit;
+        // if ($scope.geneExpressionAnnotations) {
+ //            $scope.geneExpressionAnnotations.$cancelRequest();
+ //        }
+        $scope.geneExpressionAnnotations = QueryExpressionAnnotationsGene.query(params);
+    };
+    function resetGeneExpressionAnnotations() {
+        var params = geneExpressionAnnotationQueryParams();
+        params.total = true;
+        // if ($scope.geneExpressionAnnotationsTotal) {
+//             $scope.geneExpressionAnnotationsTotal.$cancelRequest();
+//         }
+        $scope.geneExpressionAnnotationsTotal = QueryExpressionAnnotationsGene.query(params);
+        $scope.geneExpressionAnnotationsPagination.page = 1;
+        geneExpressionAnnotationsPageChanged();
+    };
+    $scope.$watch('geneExpressionAnnotationsPagination.page', function (newValue) {
+        geneExpressionAnnotationsPageChanged();
+    });
+})
 ;
