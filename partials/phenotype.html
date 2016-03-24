@@ -30,6 +30,12 @@
                             <li>
                                 <p><span class="badge">{{genesWithPhenotypesTotal.total}} </span> <a href="{{searchEntity | linkToGenesWithAnatomyPhenotype: searchQuality}}">Genes with phenotype data</a></p>
                             </li>
+                            <li>
+                                <p><span class="badge">{{taxonPhenotypeAnnotationsTotal.total}} </span> <a href="{{ {entity: {'@id': searchEntity}, quality: {'@id': searchQuality} } | linkToTaxonPhenotypeAnnotations}}">Taxon phenotype annotations</a></p>
+                            </li>
+                            <li>
+                                <p><span class="badge">{{genePhenotypeAnnotationsTotal.total}} </span> <a href="{{ {entity: {'@id': searchEntity}, quality: {'@id': searchQuality} } | linkToGenePhenotypeAnnotations }}">Gene phenotype annotations</a></p>
+                            </li>
                         </ul>
                     </div>
                 </div>

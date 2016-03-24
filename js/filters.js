@@ -149,6 +149,68 @@ angular.module('pkb.filters', [])
         return url + urlParams.join("&");
     };
 })
+.filter('linkToTaxonPhenotypeAnnotations', function ($window) {
+        return function (params) {
+            var urlParams = ["tab=taxonAnnotations"]
+            if (params.entity) {
+                urlParams.push("filter.entity=" + $window.encodeURIComponent(params.entity['@id']));
+            }
+            if (params.quality) {
+                urlParams.push("filter.quality=" + $window.encodeURIComponent(params.quality['@id']));
+            }
+            if (params.taxon) {
+                urlParams.push("filter.taxon=" + $window.encodeURIComponent(params.taxon['@id']));
+            }
+            return "#/annotations?" + urlParams.join("&");
+        };
+})
+.filter('linkToGenePhenotypeAnnotations', function ($window) {
+        return function (params) {
+            var urlParams = ["tab=genePhenotypeAnnotations"]
+            if (params.entity) {
+                urlParams.push("filter.entity=" + $window.encodeURIComponent(params.entity['@id']));
+            }
+            if (params.quality) {
+                urlParams.push("filter.quality=" + $window.encodeURIComponent(params.quality['@id']));
+            }
+            if (params.taxon) {
+                urlParams.push("filter.taxon=" + $window.encodeURIComponent(params.taxon['@id']));
+            }
+            return "#/annotations?" + urlParams.join("&");
+        };
+})
+.filter('linkToTaxonPhenotypeAnnotationsDownload', function ($window, OMN) {
+    return function (params) {
+        var url = "http://kb.phenoscape.org/api/taxon/annotations?";
+        var urlParams = ["limit=0"];
+        if (params.entity) {
+            urlParams.push("entity=" + $window.encodeURIComponent(OMN.angled(params.entity['@id'])));
+        }
+        if (params.quality) {
+            urlParams.push("quality=" + $window.encodeURIComponent(OMN.angled(params.quality['@id'])));
+        }
+        if (params.in_taxon) {
+            urlParams.push("in_taxon=" + $window.encodeURIComponent(params.in_taxon['@id']));
+        }
+        return url + urlParams.join("&");
+    };
+})
+.filter('linkToGenePhenotypeAnnotationsDownload', function ($window, OMN) {
+    return function (params) {
+        var url = "http://kb.phenoscape.org/api/gene/phenotype_annotations?";
+        var urlParams = ["limit=0"];
+        if (params.entity) {
+            urlParams.push("entity=" + $window.encodeURIComponent(OMN.angled(params.entity['@id'])));
+        }
+        if (params.quality) {
+            urlParams.push("quality=" + $window.encodeURIComponent(OMN.angled(params.quality['@id'])));
+        }
+        if (params.in_taxon) {
+            urlParams.push("in_taxon=" + $window.encodeURIComponent(params.in_taxon['@id']));
+        }
+        return url + urlParams.join("&");
+    };
+})
 .filter('modSourceLabel', function () {
     return function (uri) {
         if (uri.indexOf("http://www.informatics.jax.org/reference/summary?id=") > -1) {

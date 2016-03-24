@@ -23,7 +23,7 @@ config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/study/:study*', {templateUrl: 'partials/study.html', controller: 'StudyController', reloadOnSearch: false});
     $routeProvider.when('/characterstate/:state*', {templateUrl: 'partials/characterstate.html', controller: 'CharacterStateController'});
     $routeProvider.when('/contents', {templateUrl: 'partials/contents.html', controller: 'ContentsController'});
-    $routeProvider.when('/annotations', {templateUrl: 'partials/annotations.html', controller: 'AnnotationsController'});
+    $routeProvider.when('/annotations', {templateUrl: 'partials/annotations.html', controller: 'AnnotationsController', reloadOnSearch: false});
     $routeProvider.when('/presence_absence', {templateUrl: 'partials/presence_absence.html', controller: 'PresenceAbsenceController'});
     $routeProvider.when('/query_characters', {templateUrl: 'partials/query_characters.html', controller: 'QueryCharacterStatesController'});
     $routeProvider.when('/query_taxa', {templateUrl: 'partials/query_taxa.html', controller: 'QueryTaxaController'});

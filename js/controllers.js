@@ -50,7 +50,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
       );
     };
 })
-.controller('PhenotypeController', function ($scope, $routeParams, Term, TaxaWithPhenotype, EntityPhenotypeGenes, EQsForPhenotype, OMN) {
+.controller('PhenotypeController', function ($scope, $routeParams, Term, TaxaWithPhenotype, EntityPhenotypeGenes, EQsForPhenotype, QueryAnnotationsTaxon, QueryPhenotypeAnnotationsGene, OMN) {
     $scope.termID = $routeParams.phenotype;
     $scope.term = Term.query({iri: $scope.termID});
     $scope.eq = EQsForPhenotype.query({iri: $scope.termID});
@@ -84,8 +84,9 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
                 total: true
             };
             $scope.taxaWithPhenotypesTotal = TaxaWithPhenotype.query(params);
-            var geneParams = 
             $scope.genesWithPhenotypesTotal = EntityPhenotypeGenes.query({iri: $scope.searchEntity, quality: $scope.searchQuality, total: true});
+            $scope.taxonPhenotypeAnnotationsTotal = QueryAnnotationsTaxon.query(params);
+            $scope.genePhenotypeAnnotationsTotal = QueryPhenotypeAnnotationsGene.query(params);
         }
         else {
             $scope.taxaWithPhenotypesTotal = null;
@@ -1149,12 +1150,67 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     
     
 })
-.controller('AnnotationsController', function ($scope, OntologyTermSearch, QueryAnnotationsTaxon, QueryPhenotypeAnnotationsGene, QueryExpressionAnnotationsGene, Vocab, OMN) {
+.controller('AnnotationsController', function ($scope, $routeParams, $location, OntologyTermSearch, QueryAnnotationsTaxon, QueryPhenotypeAnnotationsGene, QueryExpressionAnnotationsGene, Vocab, OMN, Label) {
+    $scope.tabs = {
+        taxonAnnotations: {active: true},
+        genePhenotypeAnnotations: {active: false},
+        geneExpressionAnnotations: {active: false}
+    }
+    $scope.activateTab = function (tabname) {
+        if (_.has($scope.tabs, tabname)) {
+            $scope.tabs[tabname].active = true;
+            $location.search('tab', tabname);
+        }
+    }
+    if ($routeParams.tab && _.has($scope.tabs, $routeParams.tab)) {
+        $scope.tabs[$routeParams.tab].active = true;
+    }
+    
     $scope.filters = {
         taxonFilter: null,
         entityFilter: null,
         qualityFilter: null
     }
+    if ($routeParams['filter.taxon']) {
+        $scope.filters.taxonFilter = {'@id': $routeParams['filter.taxon']};
+        Label.query({'iri': $routeParams['filter.taxon']}).$promise.then(function (response) {
+            $scope.filters.taxonFilter = response;
+        });
+    }
+    if ($routeParams['filter.entity']) {
+        $scope.filters.entityFilter = {'@id': $routeParams['filter.entity']};
+        Label.query({'iri': $routeParams['filter.entity']}).$promise.then(function (response) {
+            $scope.filters.entityFilter = response;
+        });
+    }
+    if ($routeParams['filter.quality']) {
+        $scope.filters.qualityFilter = {'@id': $routeParams['filter.quality']};
+        Label.query({'iri': $routeParams['filter.quality']}).$promise.then(function (response) {
+            $scope.filters.qualityFilter = response;
+        });
+    }
+    $scope.$watch('filters.taxonFilter', function (value) {
+        if ($scope.filters.taxonFilter) {
+            $location.search('filter.taxon', $scope.filters.taxonFilter['@id']);
+        } else {
+            $location.search('filter.taxon', null);
+        }
+    });
+    $scope.$watch('filters.entityFilter', function (value) {
+        if ($scope.filters.entityFilter) {
+            $location.search('filter.entity', $scope.filters.entityFilter['@id']);
+        } else {
+            $location.search('filter.entity', null);
+        }
+    });
+    $scope.$watch('filters.qualityFilter', function (value) {
+        if ($scope.filters.qualityFilter) {
+            $location.search('filter.quality', $scope.filters.qualityFilter['@id']);
+        } else {
+            $location.search('filter.quality', null);
+        }
+    });
+    
     $scope.autocompleteTaxa = function (text) {
         return OntologyTermSearch.query({
             limit: 20,
@@ -1223,7 +1279,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.$watch('taxonAnnotationsPagination.page', function (newValue) {
         taxonAnnotationsPageChanged();
     });
-    $scope.$watchGroup(['filters.taxonFilter', 'filters.entityFilter', 'filters.qualityFilter'], function (newValues, oldValues) {
+    $scope.$watchGroup(['filters.taxonFilter["@id"]', 'filters.entityFilter["@id"]', 'filters.qualityFilter["@id"]'], function (newValues, oldValues) {
         if (($scope.filters.taxonFilter === undefined) || ($scope.filters.entityFilter === undefined) || ($scope.filters.qualityFilter === undefined)) {
             //still typing in autocomplete
         } else {
@@ -1240,9 +1296,6 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     };
     function genePhenotypeAnnotationQueryParams() {
         var params = {};
-        if ($scope.filters.taxonFilter) {
-            params.in_taxon = $scope.filters.taxonFilter['@id'];
-        }
         if ($scope.filters.entityFilter) {
             params.entity = OMN.angled($scope.filters.entityFilter['@id']);
         }
@@ -1281,9 +1334,6 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     };
     function geneExpressionAnnotationQueryParams() {
         var params = {};
-        if ($scope.filters.taxonFilter) {
-            params.in_taxon = $scope.filters.taxonFilter['@id'];
-        }
         if ($scope.filters.entityFilter) {
             params.entity = OMN.angled($scope.filters.entityFilter['@id']);
         }
@@ -1299,7 +1349,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         // if ($scope.geneExpressionAnnotations) {
  //            $scope.geneExpressionAnnotations.$cancelRequest();
  //        }
-        $scope.geneExpressionAnnotations = QueryExpressionAnnotationsGene.query(params);
+         //disable expression search for now (too slow)
+        //$scope.geneExpressionAnnotations = QueryExpressionAnnotationsGene.query(params);
     };
     function resetGeneExpressionAnnotations() {
         var params = geneExpressionAnnotationQueryParams();
@@ -1307,7 +1358,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         // if ($scope.geneExpressionAnnotationsTotal) {
 //             $scope.geneExpressionAnnotationsTotal.$cancelRequest();
 //         }
-        $scope.geneExpressionAnnotationsTotal = QueryExpressionAnnotationsGene.query(params);
+         //disable expression search for now (too slow)
+//        $scope.geneExpressionAnnotationsTotal = QueryExpressionAnnotationsGene.query(params);
         $scope.geneExpressionAnnotationsPagination.page = 1;
         geneExpressionAnnotationsPageChanged();
     };

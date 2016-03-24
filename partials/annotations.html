@@ -2,7 +2,7 @@
     <div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading">
-            <h3 class="panel-title form-inline">Query annotations</h3>
+            <h3 class="panel-title form-inline">Query phenotype annotations</h3>
           </div>
           <div class="panel-body">
               <form>
@@ -30,7 +30,7 @@
     </div>
     <div class="col-sm-8">
         <tabset>
-            <tab>
+            <tab active="tabs.taxonAnnotations.active" select="activateTab('taxonAnnotations')">
                 <tab-heading>Taxa <span class="badge">{{taxonAnnotationsTotal.total}} </span></tab-heading>
                 <div class="panel panel-default top-buffer">
                     <div class="panel-heading">
@@ -54,9 +54,10 @@
                     </table>
                 </div>
                 <pagination total-items="taxonAnnotationsTotal.total" ng-model="taxonAnnotationsPagination.page" max-size="taxonAnnotationsPagination.maxSize" class="pagination-sm" boundary-links="true" rotate="false"  items-per-page="taxonAnnotationsPagination.limit" cg-busy="taxonAnnotationsTotal.$promise"></pagination>
+                 <p><label>Download all results:</label> <a class="btn btn-info btn-xs" target="_blank" href="{{ {entity: filters.entityFilter, quality: filters.qualityFilter, in_taxon: filters.taxonFilter} | linkToTaxonPhenotypeAnnotationsDownload}}" role="button">Text</a></p>
             </tab>
-            <tab>
-                <tab-heading>Genes (phenotype) <span class="badge">{{genePhenotypeAnnotationsTotal.total}} </span></tab-heading>
+            <tab active="tabs.genePhenotypeAnnotations.active" select="activateTab('genePhenotypeAnnotations')">
+                <tab-heading>Genes <span class="badge">{{genePhenotypeAnnotationsTotal.total}} </span></tab-heading>
                 <div class="panel panel-default top-buffer">
                     <div class="panel-heading">
                         <h4>Phenotype annotations to model organism genes</h4>
@@ -64,6 +65,7 @@
                     <table class="table table-condensed table-striped" cg-busy="genePhenotypeAnnotations.$promise">
                         <thead>
                             <tr>
+                                <th>Organism</th>
                                 <th>Gene</th>
                                 <th>Phenotype</th>
                                 <th>Source</th>
@@ -71,6 +73,7 @@
                          </thead>
                          <tbody>
                              <tr ng-repeat="annotation in genePhenotypeAnnotations.results">
+                                 <td><span class="common-taxon-group"><img ng-src="{{annotation.gene['@id'] | geneIDToImage}}"></span></td>
                                  <td><a href="{{annotation.gene['@id'] | linkToGene}}">{{annotation.gene.label}}</a></td>
                                  <td><span title="{{annotation.phenotype['@id']}}"><a href="{{annotation.phenotype['@id'] | linkToPhenotype}}">{{annotation.phenotype.label}}</a></span></td>
                                  <td><a href="{{annotation.source}}" target="_blank">{{annotation.source | modSourceLabel}}</a></td>
@@ -79,8 +82,9 @@
                     </table>
                 </div>
                 <pagination total-items="genePhenotypeAnnotationsTotal.total" ng-model="genePhenotypeAnnotationsPagination.page" max-size="genePhenotypeAnnotationsPagination.maxSize" class="pagination-sm" boundary-links="true" rotate="false"  items-per-page="genePhenotypeAnnotationsPagination.limit" cg-busy="genePhenotypeAnnotationsTotal.$promise"></pagination>
+                <p><label>Download all results:</label> <a class="btn btn-info btn-xs" target="_blank" href="{{ {entity: filters.entityFilter, quality: filters.qualityFilter, in_taxon: filters.taxonFilter} | linkToGenePhenotypeAnnotationsDownload}}" role="button">Text</a></p>
             </tab>
-            <tab>
+            <tab ng-show="false" active="tabs.geneExpressionAnnotations.active" select="activateTab('geneExpressionAnnotations')">
                 <tab-heading>Genes (expression) <span class="badge">{{geneExpressionAnnotationsTotal.total}} </span></tab-heading>
                 <div class="panel panel-default top-buffer">
                     <div class="panel-heading">
