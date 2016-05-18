@@ -52,7 +52,6 @@ angular.module('pkb.directives', [])
                 iri: '='
             }
         }
-<<<<<<< HEAD
     })
     .directive('countedPhenotypesForTaxon', function() {
         return {
@@ -65,21 +64,6 @@ angular.module('pkb.directives', [])
                 entity: '=',
                 quality: '='
             }
-=======
-    }
-})
-.directive('countedPhenotypesForTaxon', function () {
-    return {
-        require: 'ngModel',
-        restrict: 'E',
-        controller: 'CountedPhenotypesForTaxonController',
-        templateUrl: 'partials/count.html',
-        scope: {
-            taxon: '=',
-            entity: '=',
-            quality: '=',
-            parts: '='
->>>>>>> upstream/master
         }
     })
     .directive('countedPresenceOrAbsenceForTaxon', function() {
