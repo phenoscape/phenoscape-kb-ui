@@ -54,7 +54,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
       );
     };
 })
-.controller('EntityController', function ($scope, $routeParams, $location, Term, TaxaWithPhenotype, EntityPresence, EntityAbsence, EntityPhenotypeGenes, EntityExpressionGenes, OntologyTermSearch, Vocab, OMN, TaxonPhenotypesQuery) {
+.controller('EntityController', function ($scope, $routeParams, $location, $window, Term, TaxaWithPhenotype, EntityPresence, EntityAbsence, EntityPhenotypeGenes, EntityExpressionGenes, OntologyTermSearch, Vocab, OMN, TaxonPhenotypesQuery, Label, APIroot) {
     $scope.termID = $routeParams.term;
     $scope.term = Term.query({'iri': $scope.termID});
     
@@ -127,15 +127,35 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     
     $scope.filters = {
         phenotypesTaxonFilter: null,
-        phenotypesQualityFilter: null
+        phenotypesQualityFilter: null,
+        phenotypesTaxaIncludeParts: false
     };
+    
+    if ($routeParams['filters.phenotypesTaxonFilter']) {
+        Label.query({'iri': $routeParams['filters.phenotypesTaxonFilter']}).$promise.then(function (response) {
+            $scope.filters.phenotypesTaxonFilter = response;
+        });
+    }
+    if ($routeParams['filters.phenotypesQualityFilter']) {
+        Label.query({'iri': $routeParams['filters.phenotypesQualityFilter']}).$promise.then(function (response) {
+            $scope.filters.phenotypesQualityFilter = response;
+        });
+    }
+    if ($routeParams['filters.phenotypesTaxaIncludeParts']) {
+        $scope.filters.phenotypesTaxaIncludeParts = "true" === $routeParams['filters.phenotypesTaxaIncludeParts'];
+    }
 
     $scope.taxaWithPhenotypesPage = 1;
     $scope.taxaWithPhenotypesMaxSize = 3;
     $scope.taxaWithPhenotypesLimit = 20;
     $scope.taxaWithPhenotypesPageChanged = function (newPage) {
             $scope.taxaWithPhenotypesPage = newPage;
-            var params = {entity: OMN.angled($scope.termID), limit: $scope.taxaWithPhenotypesLimit, offset: ($scope.taxaWithPhenotypesPage - 1) * $scope.taxaWithPhenotypesLimit};
+            var params = {
+                entity: OMN.angled($scope.termID), 
+                parts: $scope.filters.phenotypesTaxaIncludeParts,
+                limit: $scope.taxaWithPhenotypesLimit, 
+                offset: ($scope.taxaWithPhenotypesPage - 1) * $scope.taxaWithPhenotypesLimit
+            };
             if ($scope.filters.phenotypesTaxonFilter) {
                 params.in_taxon = $scope.filters.phenotypesTaxonFilter['@id'];
             }
@@ -145,7 +165,10 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
             $scope.taxaWithPhenotypes = TaxaWithPhenotype.query(params);
     };
     $scope.resetTaxaWithPhenotypes = function() {
-        var params = {entity: OMN.angled($scope.termID), total: true};
+        var params = {
+            entity: OMN.angled($scope.termID),
+            parts: $scope.filters.phenotypesTaxaIncludeParts, 
+            total: true};
         if ($scope.filters.phenotypesTaxonFilter) {
             params.in_taxon = $scope.filters.phenotypesTaxonFilter['@id'];
         }
@@ -155,9 +178,47 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         $scope.taxaWithPhenotypesTotal = TaxaWithPhenotype.query(params);
         $scope.taxaWithPhenotypesPageChanged(1);
     };
-    $scope.$watchGroup(['filters.phenotypesTaxonFilter', 'filters.phenotypesQualityFilter'], function (newValues, oldValues) {
+    $scope.$watchGroup(['filters.phenotypesTaxonFilter', 'filters.phenotypesQualityFilter', 'filters.phenotypesTaxaIncludeParts'], function (newValues, oldValues) {
+        updateTaxaWithPhenotypeDownload();
         $scope.resetTaxaWithPhenotypes();
     });
+    $scope.$watch('filters.phenotypesTaxonFilter', function (value) {
+        if ($scope.filters.phenotypesTaxonFilter) {
+            $location.search('filters.phenotypesTaxonFilter', $scope.filters.phenotypesTaxonFilter['@id']);
+        } else {
+            $location.search('filters.phenotypesTaxonFilter', null);
+        }
+    });
+    $scope.$watch('filters.phenotypesQualityFilter', function (value) {
+        if ($scope.filters.phenotypesQualityFilter) {
+            $location.search('filters.phenotypesQualityFilter', $scope.filters.phenotypesQualityFilter['@id']);
+        } else {
+            $location.search('filters.phenotypesQualityFilter', null);
+        }
+    });
+    $scope.$watch('filters.phenotypesTaxaIncludeParts', function (value) {
+        if ($scope.filters.phenotypesTaxaIncludeParts) {
+            $location.search('filters.phenotypesTaxaIncludeParts', $scope.filters.phenotypesTaxaIncludeParts ? "true" : "false");
+        } else {
+            $location.search('filters.phenotypesTaxaIncludeParts', null);
+        }
+    });
+    
+    function updateTaxaWithPhenotypeDownload() {
+        var url = APIroot + "/taxon/with_phenotype?";
+        var urlParams = ["limit=0"];
+        urlParams.push("entity=" + $window.encodeURIComponent(OMN.angled($scope.termID)));
+        if ($scope.filters.phenotypesQualityFilter) {
+            urlParams.push("quality=" + $window.encodeURIComponent(OMN.angled($scope.filters.phenotypesQualityFilter['@id'])));
+        }
+        if ($scope.filters.phenotypesTaxonFilter) {
+            urlParams.push("in_taxon=" + $window.encodeURIComponent($scope.filters.phenotypesTaxonFilter['@id']));
+        }
+        if ($scope.filters.phenotypesTaxaIncludeParts) {
+            urlParams.push("parts=" + $scope.filters.phenotypesTaxaIncludeParts)
+        }
+        $scope.linkToTaxaWithPhenotypeDownload = url + urlParams.join("&");
+    }
     
     $scope.filters.presenceTaxonFilter = null;
     $scope.taxaWithPresencePage = 1;
@@ -243,7 +304,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.filters = {
         phenotypesEntityFilter: null,
         phenotypesQualityFilter: null,
-        quality_type: null
+        quality_type: null,
+        phenotypesEntityIncludeParts: false
     };
     if ($routeParams['phenotypes.entity']) {
         Label.query({'iri': $routeParams['phenotypes.entity']}).$promise.then(function (response) {
@@ -259,6 +321,9 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         Label.query({'iri': $routeParams['phenotypes.quality']}).$promise.then(function (response) {
             $scope.filters.phenotypesQualityFilter = response;
         });
+    }
+    if ($routeParams['phenotypes.entity_parts']) {
+        $scope.filters.phenotypesEntityIncludeParts = "true" === $routeParams['phenotypes.entity_parts'];
     }
     $scope.autocompleteEntity = function (text) {
         return OntologyTermSearch.query({
@@ -285,7 +350,12 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     
     $scope.phenotypeProfilePageChanged = function (newPage) {
         $scope.phenotypeProfilePage = newPage;
-        var params = {taxon: $scope.taxonID, limit: $scope.phenotypeProfileLimit, offset: ($scope.phenotypeProfilePage - 1) * $scope.phenotypeProfileLimit};        
+        var params = {
+            taxon: $scope.taxonID, 
+            parts: $scope.filters.phenotypesEntityIncludeParts,
+            limit: $scope.phenotypeProfileLimit, 
+            offset: ($scope.phenotypeProfilePage - 1) * $scope.phenotypeProfileLimit
+        };
         if ($scope.filters.quality_type == 'quality-phenotype') {
             if ($scope.filters.phenotypesEntityFilter) {
                 params.entity = OMN.angled($scope.filters.phenotypesEntityFilter['@id']);
@@ -310,7 +380,10 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         }
     };
     $scope.resetPhenotypeProfile = function () {
-        var params = {taxon: $scope.taxonID, total: true};
+        var params = {
+            taxon: $scope.taxonID, 
+            parts: $scope.filters.phenotypesEntityIncludeParts,
+            total: true};
         if ($scope.filters.quality_type == 'quality-phenotype') {
             if ($scope.filters.phenotypesEntityFilter) {
                 params.entity = OMN.angled($scope.filters.phenotypesEntityFilter['@id']);
@@ -321,6 +394,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
             $scope.phenotypeProfileTotal = TaxonPhenotypesQuery.query(params);
             var url = APIroot + "/taxon/phenotypes?";
             var urlParams = ["limit=0"];
+            urlParams.push("parts=" + params.parts);
             if (params.entity) {
                 urlParams.push("entity=" + $window.encodeURIComponent(params.entity));
             }
@@ -355,7 +429,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     }
     $scope.resetPhenotypeProfile();
     
-    $scope.$watchGroup(['filters.phenotypesEntityFilter', 'filters.phenotypesQualityFilter', 'filters.quality_type'], function (value) {
+    $scope.$watchGroup(['filters.phenotypesEntityFilter', 'filters.phenotypesQualityFilter', 'filters.quality_type', 'filters.phenotypesEntityIncludeParts'], function (value) {
         $scope.resetPhenotypeProfile();
     });
     $scope.$watch('filters.phenotypesEntityFilter', function (value) {
@@ -363,7 +437,6 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
             $location.search('phenotypes.entity', $scope.filters.phenotypesEntityFilter['@id']);
         } else {
             $location.search('phenotypes.entity', null);
-            // $scope.filters.quality_type = "quality-phenotype";
         }
     });
     $scope.$watch('filters.phenotypesQualityFilter', function (value) {
@@ -375,6 +448,9 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     });
     $scope.$watch('filters.quality_type', function (value) {
         $location.search('phenotypes.quality_type', $scope.filters.quality_type);
+    });
+    $scope.$watch('filters.phenotypesEntityIncludeParts', function (value) {
+        $location.search('phenotypes.entity_parts', $scope.filters.phenotypesEntityIncludeParts ? "true" : "false");
     });
     
     $scope.variationProfilePage = 1;
@@ -983,6 +1059,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     var params = {total: true};
     params.taxon = $scope.taxon['@id'];
     params.entity = OMN.angled($scope.entity['@id']);
+    params.parts = $scope.parts;
     if ($scope.quality) {
         params.quality = OMN.angled($scope.quality['@id']);
     }

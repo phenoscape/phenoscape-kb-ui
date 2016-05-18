@@ -11,7 +11,7 @@
                 <p><label>Get Newick tree for this taxon (based on the VTO classification):</label> <a class="btn btn-info btn-xs" target="_blank" ng-href="http://kb.phenoscape.org/kb/taxon/newick?iri={{taxonID | encodeURI}}" role="button">Text</a></p>
             </tab>
             <tab active="tabs.phenotypes.active" select="activateTab('phenotypes')">
-                <tab-heading>Phenotypes <span class="badge">{{phenotypeProfileTotal.total}}</span></tab-heading>
+                <tab-heading>Phenotypes <span class="badge">{{phenotypeProfileTotal.total}} </span></tab-heading>
                 <div class="panel panel-default top-buffer">
                     <div class="panel-heading">
                         <h4>Phenotypes directly annotated to this taxon</h4>
@@ -26,6 +26,14 @@
                                     <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-show="filters.phenotypesEntityFilter"></span>
                                     <i ng-show="loadingEntityPhenotypes" class="glyphicon glyphicon-refresh"></i>
                                 </div>
+                               <div class="checkbox">
+                                       <label>
+                                           <input type="checkbox" ng-model="filters.phenotypesEntityIncludeParts" ng-disabled="filters.quality_type != 'quality-phenotype'"> Include parts
+                                       </label>
+                               </div>
+                           </form>
+                           <p></p>
+                           <form class="form-inline">
                                 <div class="form-group">
                                     <label style="width: 100%"> Quality
                                         <div class="radio">
@@ -74,7 +82,7 @@
                 <p><label>Download all results:</label> <a class="btn btn-info btn-xs" target="_blank" ng-href="{{linkToTaxonPhenotypeProfileDownload}}" role="button">Text</a></p>
             </tab>
             <tab active="tabs.variation.active" select="activateTab('variation')">
-                <tab-heading>Variation profile <span class="badge">{{variationProfileTotal.total}}</span></tab-heading>
+                <tab-heading>Variation profile <span class="badge">{{variationProfileTotal.total}} </span></tab-heading>
                 <div class="panel panel-default top-buffer">
                     <div class="panel-heading">
                         <h4>Phenotypes varying among immediate children of this taxon</h4>
