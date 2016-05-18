@@ -7,7 +7,11 @@
 }
 
 .axis {
-  font: 10px sans-serif;
+
+  font-family: "Exo 2", "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: 300;
+  font-size: 1em;
+  line-height: 1em;
 }
 
 .axis path,
