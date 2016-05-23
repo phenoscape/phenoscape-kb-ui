@@ -487,7 +487,7 @@ angular.module('pkb.directives', [])
                                 .style("text-anchor", "start");
 
                             //hyperlink the x axis labels
-                            d3.selectAll("text")
+                            d3..select('#taxa').selectAll("text")
                                 .filter(function(d) {
                                     return typeof(d) == "string";
                                 })
@@ -635,7 +635,7 @@ angular.module('pkb.directives', [])
                                 .style("text-anchor", "start");
 
                             //hyperlink the x axis labels
-                            d3.selectAll("text")
+                            d3.select("#anatomy").selectAll("text")
                                 .filter(function(d) {
                                     return typeof(d) == "string";
                                 })
