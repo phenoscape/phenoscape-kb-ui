@@ -292,13 +292,15 @@ angular.module('pkb.directives', [])
                     btn.setAttribute("id", id_name);
                     var t = document.createTextNode("Go back on " + graph_name + " graph");
                     btn.appendChild(t);
-                    document.body.appendChild(btn);
+                    //document.body.appendChild(btn);
+                    element[0].appendChild(btn)
                 }
 
                 function createGraphArea(id_name) {
                     var div = document.createElement("div");
                     div.setAttribute("id", id_name);
-                    document.body.appendChild(div);
+                    //document.body.appendChild(div);
+                    element[0].appendChild(div)
                 }
 
                 /**-----------------------------Taxa Graph API functions-----------------------**/
@@ -628,6 +630,8 @@ angular.module('pkb.directives', [])
                 //anatomy graphing function
                 function drawGraph_Anat(data) {
                     stack_Anat.push(data);
+                    var target = document.getElementById('target_anat')
+
                     var x_Anat = d3.scale.ordinal()
                         .rangeRoundBands([0, width], .1)
                         .domain(sortDescending(data).map(function(d) {
@@ -740,7 +744,6 @@ angular.module('pkb.directives', [])
                     });
                     //update to get sub anatomies based on click
                     bars_Anat.on('click', function(d, i) {
-                        var target = document.getElementById('target_anat')
                         var spinner = new Spinner(opts).spin(target); //create loading spinner
 
                         var promise = new Promise(function(resolve, reject) {
@@ -792,5 +795,5 @@ angular.module('pkb.directives', [])
                 createGraphArea("anatomy");
                 drawGraph_Anat(data_Anat);
             }
-        }
+        };
     });
