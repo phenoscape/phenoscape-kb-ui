@@ -261,7 +261,7 @@ angular.module('pkb.directives', [])
                         ,
                     className: 'spinner' // The CSS class to assign to the spinner
                         ,
-                    top: '100%' // Top position relative to parent
+                    top: '20%' // Top position relative to parent
                         ,
                     left: '50%' // Left position relative to parent
                         ,
@@ -783,8 +783,8 @@ angular.module('pkb.directives', [])
                 }
 
                 //call the functions
-                createGraphArea("target_taxa")
                 createBackButton("taxa_button", "taxa");
+                createGraphArea("target_taxa")
                 createGraphArea("taxa");
                 drawGraph(data);
 

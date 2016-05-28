@@ -55,5 +55,9 @@
 }
 
 #target_anat{
-  bottom: 50%;
+  position: relative;
+}
+
+#target_taxa{
+  position: relative;
 }
