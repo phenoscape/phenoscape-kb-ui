@@ -73,6 +73,9 @@ angular.module('pkb.filters', [])
           if (params.entity_parts) {
               urlParams.push("phenotypes.entity_parts=" + params.entity_parts)
           }
+          if (params.entity_homologs) {
+              urlParams.push("phenotypes.entity_homologs=" + params.entity_homologs)
+          }
           return "#/taxon/" + $window.encodeURIComponent(params.taxon['@id']) + "?" + urlParams.join("&");
       };
 })

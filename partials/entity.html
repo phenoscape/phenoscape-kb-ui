@@ -44,7 +44,12 @@
                                         <div class="form-group">
                                             <div class="checkbox">
                                                 <label>
-                                                    <input type="checkbox" ng-model="filters.phenotypesTaxaIncludeParts"> Include parts of {{term.label}}
+                                                    <input type="checkbox" ng-model="filters.phenotypesTaxaIncludeParts"> Include structural parts
+                                                </label>
+                                            </div>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" ng-model="filters.phenotypesTaxaIncludeHomologs"> Include homologous structures
                                                 </label>
                                             </div>
                                         </div>
@@ -63,7 +68,7 @@
                                     <tr ng-repeat="taxon in taxaWithPhenotypes.results">
                                         <td><common-group taxon="taxon['@id']"></common-group></td>
                                         <td><a href="{{taxon['@id'] | linkToTaxon}}"><taxon-name iri="taxon['@id']"></taxon-name></a></td>
-                                        <td><a href="{{ {taxon: taxon, entity: {'@id': termID}, quality: filters.phenotypesQualityFilter, entity_parts: filters.phenotypesTaxaIncludeParts} | linkToTaxonPhenotypeProfile}}">View phenotypes <counted-phenotypes-for-taxon taxon="taxon" entity="{'@id': termID}" quality="filters.phenotypesQualityFilter" parts="filters.phenotypesTaxaIncludeParts"/></a></td>
+                                        <td><a href="{{ {taxon: taxon, entity: {'@id': termID}, quality: filters.phenotypesQualityFilter, entity_parts: filters.phenotypesTaxaIncludeParts, entity_homologs: filters.phenotypesTaxaIncludeHomologs} | linkToTaxonPhenotypeProfile}}">View phenotypes <counted-phenotypes-for-taxon taxon="taxon" entity="{'@id': termID}" quality="filters.phenotypesQualityFilter" parts="filters.phenotypesTaxaIncludeParts" homologs="filters.phenotypesTaxaIncludeHomologs"/></a></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -168,7 +173,7 @@
                                 <p>These genes have been annotated with phenotypes affecting <mark>{{term.label}}</mark> (directly or via inference).</p>
                                 <div class="checkbox well">
                                     <label>
-                                        <input type="checkbox" ng-model="phenotypeGenesSettings.includeParts" ng-click="resetPhenotypeGenes();"> Include parts of {{term.label}}
+                                        <input type="checkbox" ng-model="phenotypeGenesSettings.includeParts" ng-click="resetPhenotypeGenes();"> Include structural parts
                                     </label>
                                 </div>
                             </div>
