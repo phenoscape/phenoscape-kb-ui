@@ -288,15 +288,28 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.phenotypeGenesLimit = 20;
     $scope.phenotypeGenesSettings = {};
     $scope.phenotypeGenesSettings.includeParts = false;
+    $scope.phenotypeGenesSettings.includeHomologs = false;
     $scope.phenotypeGenesPageChanged = function (newPage) {
-            $scope.phenotypeGenesPage = newPage;
-            $scope.phenotypeGenes = EntityPhenotypeGenes.query({iri: $scope.termID, limit: $scope.phenotypeGenesLimit, offset: ($scope.phenotypeGenesPage - 1) * $scope.phenotypeGenesLimit, parts: $scope.phenotypeGenesSettings.includeParts});
-    };
+        $scope.phenotypeGenesPage = newPage;
+        $scope.phenotypeGenes = EntityPhenotypeGenes.query(
+            {
+                iri: $scope.termID,
+                limit: $scope.phenotypeGenesLimit,
+                offset: ($scope.phenotypeGenesPage - 1) * $scope.phenotypeGenesLimit,
+                parts: $scope.phenotypeGenesSettings.includeParts,
+                homologs: $scope.phenotypeGenesSettings.includeHomologs
+            });
+        };
     $scope.resetPhenotypeGenes = function() {
-        $scope.phenotypeGenesTotal = EntityPhenotypeGenes.query({iri: $scope.termID, total: true, parts: $scope.phenotypeGenesSettings.includeParts});
-        $scope.phenotypeGenesPageChanged(1);
-    };
-    
+        $scope.phenotypeGenesTotal = EntityPhenotypeGenes.query(
+            {
+                iri: $scope.termID,
+                total: true,
+                parts: $scope.phenotypeGenesSettings.includeParts,
+                homologs: $scope.phenotypeGenesSettings.includeHomologs
+            });
+            $scope.phenotypeGenesPageChanged(1);
+        };
     $scope.expressionGenesPage = 1;
     $scope.expressionGenesMaxSize = 3;
     $scope.expressionGenesLimit = 20;
