@@ -28,7 +28,12 @@
                                 </div>
                                <div class="checkbox">
                                        <label>
-                                           <input type="checkbox" ng-model="filters.phenotypesEntityIncludeParts" ng-disabled="filters.quality_type != 'quality-phenotype'"> Include parts
+                                           <input type="checkbox" ng-model="filters.phenotypesEntityIncludeParts" ng-disabled="filters.quality_type != 'quality-phenotype'"> Include structural parts
+                                       </label>
+                               </div>
+                               <div class="checkbox">
+                                       <label>
+                                           <input type="checkbox" ng-model="filters.phenotypesEntityIncludeHomologs" ng-disabled="filters.quality_type != 'quality-phenotype'"> Include homologous structures
                                        </label>
                                </div>
                            </form>

@@ -321,7 +321,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         phenotypesEntityFilter: null,
         phenotypesQualityFilter: null,
         quality_type: null,
-        phenotypesEntityIncludeParts: false
+        phenotypesEntityIncludeParts: false,
+        phenotypesEntityIncludeHomologs: false
     };
     if ($routeParams['phenotypes.entity']) {
         Label.query({'iri': $routeParams['phenotypes.entity']}).$promise.then(function (response) {
@@ -340,6 +341,9 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     }
     if ($routeParams['phenotypes.entity_parts']) {
         $scope.filters.phenotypesEntityIncludeParts = "true" === $routeParams['phenotypes.entity_parts'];
+    }
+    if ($routeParams['phenotypes.entity_homologs']) {
+        $scope.filters.phenotypesEntityIncludeHomologs = "true" === $routeParams['phenotypes.entity_homologs'];
     }
     $scope.autocompleteEntity = function (text) {
         return OntologyTermSearch.query({
@@ -369,6 +373,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         var params = {
             taxon: $scope.taxonID, 
             parts: $scope.filters.phenotypesEntityIncludeParts,
+            homologs: $scope.filters.phenotypesEntityIncludeHomologs,
             limit: $scope.phenotypeProfileLimit, 
             offset: ($scope.phenotypeProfilePage - 1) * $scope.phenotypeProfileLimit
         };
@@ -399,6 +404,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         var params = {
             taxon: $scope.taxonID, 
             parts: $scope.filters.phenotypesEntityIncludeParts,
+            homologs: $scope.filters.phenotypesEntityIncludeHomologs,
             total: true};
         if ($scope.filters.quality_type == 'quality-phenotype') {
             if ($scope.filters.phenotypesEntityFilter) {
@@ -445,7 +451,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     }
     $scope.resetPhenotypeProfile();
     
-    $scope.$watchGroup(['filters.phenotypesEntityFilter', 'filters.phenotypesQualityFilter', 'filters.quality_type', 'filters.phenotypesEntityIncludeParts'], function (value) {
+    $scope.$watchGroup(['filters.phenotypesEntityFilter', 'filters.phenotypesQualityFilter', 'filters.quality_type', 'filters.phenotypesEntityIncludeParts', 'filters.phenotypesEntityIncludeHomologs'], function (value) {
         $scope.resetPhenotypeProfile();
     });
     $scope.$watch('filters.phenotypesEntityFilter', function (value) {
@@ -467,6 +473,9 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     });
     $scope.$watch('filters.phenotypesEntityIncludeParts', function (value) {
         $location.search('phenotypes.entity_parts', $scope.filters.phenotypesEntityIncludeParts ? "true" : "false");
+    });
+    $scope.$watch('filters.phenotypesEntityIncludeHomologs', function (value) {
+        $location.search('phenotypes.entity_homologs', $scope.filters.phenotypesEntityIncludeHomologs ? "true" : "false");
     });
     
     $scope.variationProfilePage = 1;
