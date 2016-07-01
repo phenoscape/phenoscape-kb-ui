@@ -3,7 +3,13 @@
 /* Controllers */
 
 angular.module('pkb.controllers', ['ui.bootstrap'])
-.controller('AppController', function ($scope, AnatomicalTermSearch, OntologyTermSearch, GeneSearch, Vocab) {
+.controller('AppController', function ($scope, $window, $location, AnatomicalTermSearch, OntologyTermSearch, GeneSearch, Vocab) {
+    $scope.$on('$routeChangeSuccess', function() {
+        $window.ga('set', 'page', $location.url());
+        $window.ga('send', 'pageview');
+        console.log("route change: " + $location.url())
+    });
+    
     $scope.clickLink = function () {
         $scope.clearSearch();
     };
