@@ -327,4 +327,11 @@ angular.module('pkb.services', ['ngResource'])
                 });
             }
         }
+    })
+    .factory('QueryAnnotationsTaxon', function ($resource, APIroot) {
+        return $resource(APIroot + '/taxon/annotations', {}, {
+            query: {
+                method: 'GET',
+                headers: {'Accept': 'application/json'}
+        }})
     });
