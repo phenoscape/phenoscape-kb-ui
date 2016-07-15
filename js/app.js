@@ -11,7 +11,8 @@ angular.module('pkb', [
 'pkb.filters',
 'pkb.services',
 'pkb.directives',
-'pkb.controllers'
+'pkb.controllers',
+'pkb.controllersext'
 ]).
 config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when('/home', {templateUrl: 'partials/home.html', controller: 'HomeController'});
@@ -32,5 +33,6 @@ config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/similarity', {templateUrl: 'partials/similarity.html', controller: 'SimilarityController'});
     $routeProvider.when('/annotate_text', {templateUrl: 'partials/annotate_text.html', controller: 'AnnotateTextController'});
     $routeProvider.when('/visualization', {templateUrl: 'partials/visualization.html', controller: 'VisualizationController'});
+    $routeProvider.when('/annotations', {templateUrl: 'partials/annotations.html', controller: 'AnnotationsController', reloadOnSearch: false});
 	$routeProvider.otherwise({redirectTo: '/home'});
 }]);

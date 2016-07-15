@@ -1,0 +1,66 @@
+<div class="row">
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title form-inline">Query phenotype annotations</h3>
+          </div>
+          <div class="panel-body">
+              <form>
+                  <div class="form-group" ng-class="{'has-success': filters.taxonFilter, 'has-feedback': filters.taxonFilter}">
+                      <label for="withinTaxonInput">Within taxon</label>
+                      <input id="withinTaxonInput" type="text" ng-model="filters.taxonFilter" placeholder="any taxonomic group" typeahead="withinTaxon as withinTaxon.label for withinTaxon in autocompleteTaxa($viewValue)" typeahead-loading="loadingWithinTaxon" typeahead-wait-ms="300" typeahead-editable="false" class="form-control">
+                      <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-show="filters.taxonFilter"></span>
+                      <i ng-show="loadingWithinTaxon" class="glyphicon glyphicon-refresh"></i>
+                  </div>
+                  <div class="form-group" ng-class="{'has-success': filters.entityFilter, 'has-feedback': filters.entityFilter}">
+                      <label for="entityInput">Anatomy</label>
+                      <input id="entityInput" type="text" ng-model="filters.entityFilter" placeholder="any anatomical entity" typeahead="entity as entity.label for entity in autocompleteEntity($viewValue)" typeahead-loading="loadingEntity" typeahead-wait-ms="300" typeahead-editable="false" class="form-control">
+                      <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-show="filters.entityFilter"></span>
+                      <i ng-show="loadingEntity" class="glyphicon glyphicon-refresh"></i>
+                  </div>
+                  <div class="form-group" ng-class="{'has-success': filters.qualityFilter, 'has-feedback': filters.qualityFilter}">
+                      <label for="qualityInput">Quality</label>
+                      <input id="qualityInput" type="text" ng-model="filters.qualityFilter" placeholder="e.g. shape, size, position" typeahead="quality as quality.label for quality in autocompleteQuality($viewValue)" typeahead-loading="loadingQuality" typeahead-wait-ms="300" typeahead-editable="false" class="form-control">
+                      <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-show="filters.qualityFilter"></span>
+                      <i ng-show="loadingQuality" class="glyphicon glyphicon-refresh"></i>
+                  </div>
+              </form>
+          </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <tabset>
+            <tab active="tabs.taxonAnnotations.active" select="activateTab('taxonAnnotations')">
+                <tab-heading>Taxa <span class="badge">{{taxonAnnotationsTotal.total}} </span></tab-heading>
+                <div class="panel panel-default top-buffer">
+                    <div class="panel-heading">
+                        <h4>Phenotype annotations to taxa</h4>
+                    </div>
+                    <table class="table table-condensed table-striped" cg-busy="taxonAnnotations.$promise">
+                        <thead>
+                            <tr>
+                                <th>Taxon</th>
+                                <th>Phenotype</th>
+                                <th>Source</th>
+                            </tr>
+                         </thead>
+                         <tbody>
+                             <tr ng-repeat="annotation in taxonAnnotations.results">
+                                 <td><a href="{{annotation.taxon['@id'] | linkToTaxon}}"><taxon-name iri="annotation.taxon['@id']"></taxon-name></a></td>
+                                 <td><span title="{{annotation.phenotype['@id']}}"><a>{{annotation.phenotype.label}}</a></span></td>
+                                 <!--
+                                 <td><span title="{{annotation.phenotype['@id']}}"><a href="{{annotation.phenotype['@id'] | linkToPhenotype}}">{{annotation.phenotype.label}}</a></span></td>
+                                     -->
+                                 <td><a href="{{annotation.study['@id'] | linkToStudy}}">{{annotation.study.label}}</a></td>
+                             </tr>
+                     </tbody>
+                    </table>
+                </div>
+                <pagination total-items="taxonAnnotationsTotal.total" ng-model="taxonAnnotationsPagination.page" max-size="taxonAnnotationsPagination.maxSize" class="pagination-sm" boundary-links="true" rotate="false"  items-per-page="taxonAnnotationsPagination.limit" cg-busy="taxonAnnotationsTotal.$promise"></pagination>
+                <!--
+                 <p><label>Download all results:</label> <a class="btn btn-info btn-xs" target="_blank" href="{{ {entity: filters.entityFilter, quality: filters.qualityFilter, in_taxon: filters.taxonFilter} | linkToTaxonPhenotypeAnnotationsDownload}}" role="button">Text</a></p>
+                    -->
+            </tab>
+        </tabset>
+    </div>
+</div>
