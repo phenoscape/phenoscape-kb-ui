@@ -37,7 +37,7 @@
                                         </div>
                                         <div class="form-group" ng-class="{'has-success': filters.phenotypesQualityFilter, 'has-feedback': filters.phenotypesQualityFilter}">
                                             <label for="qualityInputPhenotypes">Quality</label>
-                                            <input id="qualityInputPhenotypes" type="text" ng-model="filters.phenotypesQualityFilter" placeholder="any phenotypic quality" typeahead="quality as quality.label for quality in autocompleteQuality($viewValue)" typeahead-loading="loadingQualityPhenotypes" typeahead-wait-ms="300" typeahead-editable="false" class="form-control">
+                                            <input id="qualityInputPhenotypes" type="text" ng-model="filters.phenotypesQualityFilter" placeholder="e.g. shape, size, position" typeahead="quality as quality.label for quality in autocompleteQuality($viewValue)" typeahead-loading="loadingQualityPhenotypes" typeahead-wait-ms="300" typeahead-editable="false" class="form-control">
                                             <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-show="filters.phenotypesQualityFilter"></span>
                                             <i ng-show="loadingQualityPhenotypes" class="glyphicon glyphicon-refresh"></i>
                                         </div>
@@ -172,16 +172,26 @@
                             <div class="panel-body">
                                 <p>These genes have been annotated with phenotypes affecting <mark>{{term.label}}</mark> (directly or via inference).</p>
                                 <div class="well">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" ng-model="phenotypeGenesSettings.includeParts" ng-click="resetPhenotypeGenes();"> Include structural parts
-                                        </label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" ng-model="phenotypeGenesSettings.includeHomologs" ng-click="resetPhenotypeGenes();"> Include homologous structures
-                                        </label>
-                                    </div>
+                                    <form class="form-inline">
+                                        <div class="form-group" ng-class="{'has-success': phenotypeGenesSettings.qualityFilter, 'has-feedback': phenotypeGenesSettings.qualityFilter}">
+                                            <label for="qualityInputPhenotypesGene">Quality</label>
+                                            <input id="qualityInputPhenotypesGene" type="text" ng-model="phenotypeGenesSettings.qualityFilter" placeholder="e.g. shape, size, position" typeahead="quality as quality.label for quality in autocompleteQuality($viewValue)" typeahead-loading="loadingQualityPhenotypesGene" typeahead-wait-ms="300" typeahead-editable="false" class="form-control">
+                                            <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-show="phenotypeGenesSettings.qualityFilter"></span>
+                                            <i ng-show="loadingQualityPhenotypesGene" class="glyphicon glyphicon-refresh"></i>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" ng-model="phenotypeGenesSettings.includeParts"> Include structural parts
+                                                </label>
+                                            </div>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" ng-model="phenotypeGenesSettings.includeHomologs"> Include homologous structures
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                             <table class="table table-condensed table-striped" cg-busy="phenotypeGenes.$promise">
@@ -200,7 +210,7 @@
                             </table>
                         </div>
                         <pagination total-items="phenotypeGenesTotal.total" ng-model="phenotypeGenesPage" max-size="phenotypeGenesMaxSize" class="pagination-sm" boundary-links="true" rotate="false"  items-per-page="phenotypeGenesLimit" cg-busy="phenotypeGenesTotal.$promise" ng-change="phenotypeGenesPageChanged(phenotypeGenesPage)"></pagination>
-                        <p><label>Download all results:</label> <a class="btn btn-info btn-xs" target="_blank" href="http://kb.phenoscape.org/kb/gene/affecting_entity_phenotype?limit=0&amp;iri={{termID | encodeURI}}&amp;parts={{phenotypeGenesSettings.includeParts}}" role="button">Text</a></p>
+                        <p><label>Download all results:</label> <a class="btn btn-info btn-xs" target="_blank" href="http://kb.phenoscape.org/kb/gene/affecting_entity_phenotype?limit=0&amp;iri={{termID | encodeURI}}&amp;parts={{phenotypeGenesSettings.includeParts}}&amp;homologs={{phenotypeGenesSettings.includeHomologs}}{{(phenotypeGenesSettings.qualityFilter) ? '&amp;quality=' + phenotypeGenesSettings.qualityFilter['@id'] : ''}}" role="button">Text</a></p>
                     </tab>
                     <tab active="genesTabs.expression.active" select="activateGenesTab('expression')">
                         <tab-heading>Expression <span class="badge">{{expressionGenesTotal.total}} </span></tab-heading>

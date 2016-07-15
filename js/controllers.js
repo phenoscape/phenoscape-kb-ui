@@ -292,27 +292,47 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.phenotypeGenesMaxSize = 3;
     $scope.phenotypeGenesLimit = 20;
     $scope.phenotypeGenesSettings = {};
+    $scope.phenotypeGenesSettings.qualityFilter = null;
     $scope.phenotypeGenesSettings.includeParts = false;
     $scope.phenotypeGenesSettings.includeHomologs = false;
+    
+    if ($routeParams['filters.genePhenotypesQualityFilter']) {
+        Label.query({'iri': $routeParams['filters.genePhenotypesQualityFilter']}).$promise.then(function (response) {
+            $scope.phenotypeGenesSettings.qualityFilter = response;
+        });
+    }
+    if ($routeParams['filters.genePhenotypesIncludeParts']) {
+        $scope.phenotypeGenesSettings.includeParts = "true" === $routeParams['filters.genePhenotypesIncludeParts'];
+    }
+    if ($routeParams['filters.genePhenotypesIncludeHomologs']) {
+        $scope.phenotypeGenesSettings.includeHomologs = "true" === $routeParams['filters.genePhenotypesIncludeHomologs'];
+    }
+    
     $scope.phenotypeGenesPageChanged = function (newPage) {
         $scope.phenotypeGenesPage = newPage;
-        $scope.phenotypeGenes = EntityPhenotypeGenes.query(
-            {
+        var params = {
                 iri: $scope.termID,
                 limit: $scope.phenotypeGenesLimit,
                 offset: ($scope.phenotypeGenesPage - 1) * $scope.phenotypeGenesLimit,
                 parts: $scope.phenotypeGenesSettings.includeParts,
                 homologs: $scope.phenotypeGenesSettings.includeHomologs
-            });
+            };
+        if ($scope.phenotypeGenesSettings.qualityFilter) {
+            params.quality = $scope.phenotypeGenesSettings.qualityFilter['@id'];
+        }
+        $scope.phenotypeGenes = EntityPhenotypeGenes.query(params);
         };
     $scope.resetPhenotypeGenes = function() {
-        $scope.phenotypeGenesTotal = EntityPhenotypeGenes.query(
-            {
+        var params =  {
                 iri: $scope.termID,
                 total: true,
                 parts: $scope.phenotypeGenesSettings.includeParts,
                 homologs: $scope.phenotypeGenesSettings.includeHomologs
-            });
+        };
+        if ($scope.phenotypeGenesSettings.qualityFilter) {
+            params.quality = $scope.phenotypeGenesSettings.qualityFilter['@id'];
+        }
+        $scope.phenotypeGenesTotal = EntityPhenotypeGenes.query(params);
             $scope.phenotypeGenesPageChanged(1);
         };
     $scope.expressionGenesPage = 1;
@@ -326,6 +346,32 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         $scope.expressionGenesTotal = EntityExpressionGenes.query({iri: $scope.termID, total: true});
         $scope.expressionGenesPageChanged(1);
     };
+    
+    $scope.$watchGroup(['phenotypeGenesSettings.qualityFilter', 'phenotypeGenesSettings.includeParts', 'phenotypeGenesSettings.includeHomologs'], function (newValues, oldValues) {
+        updateTaxaWithPhenotypeDownload();//FIXME
+        $scope.resetPhenotypeGenes();
+    });
+    $scope.$watch('phenotypeGenesSettings.qualityFilter', function (value) {
+        if ($scope.phenotypeGenesSettings.qualityFilter) {
+            $location.search('filters.genePhenotypesQualityFilter', $scope.phenotypeGenesSettings.qualityFilter['@id']);
+        } else {
+            $location.search('filters.genePhenotypesQualityFilter', null);
+        }
+    });
+    $scope.$watch('phenotypeGenesSettings.includeParts', function (value) {
+        if ($scope.phenotypeGenesSettings.includeParts) {
+            $location.search('filters.genePhenotypesIncludeParts', $scope.phenotypeGenesSettings.includeParts ? "true" : "false");
+        } else {
+            $location.search('filters.genePhenotypesIncludeParts', null);
+        }
+    });
+    $scope.$watch('phenotypeGenesSettings.includeHomologs', function (value) {
+        if ($scope.phenotypeGenesSettings.includeHomologs) {
+            $location.search('filters.genePhenotypesIncludeHomologs', $scope.phenotypeGenesSettings.includeHomologs ? "true" : "false");
+        } else {
+            $location.search('filters.genePhenotypesIncludeHomologs', null);
+        }
+    });
     
     $scope.resetTaxaWithPresence();
     $scope.resetTaxaWithAbsence();

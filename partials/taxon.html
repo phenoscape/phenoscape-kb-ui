@@ -45,7 +45,7 @@
                                             <label style="width: 100%">
                                                 <input type="radio" name="qualityRadio" value="quality-phenotype" ng-model="filters.quality_type">
                                                 <div class="form-group" ng-class="{'has-success': filters.phenotypesQualityFilter, 'has-feedback': filters.phenotypesQualityFilter}">
-                                                    <input id="qualityInputPhenotypes" type="text" ng-model="filters.phenotypesQualityFilter" placeholder="any phenotypic quality" typeahead="quality as quality.label for quality in autocompleteQuality($viewValue)" typeahead-loading="loadingQualityPhenotypes" typeahead-wait-ms="300" typeahead-editable="false" class="form-control" ng-disabled="filters.quality_type != 'quality-phenotype'">
+                                                    <input id="qualityInputPhenotypes" type="text" ng-model="filters.phenotypesQualityFilter" placeholder="e.g. shape, size, position" typeahead="quality as quality.label for quality in autocompleteQuality($viewValue)" typeahead-loading="loadingQualityPhenotypes" typeahead-wait-ms="300" typeahead-editable="false" class="form-control" ng-disabled="filters.quality_type != 'quality-phenotype'">
                                                     <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-show="filters.phenotypesQualityFilter"></span>
                                                     <i ng-show="loadingQualityPhenotypes" class="glyphicon glyphicon-refresh"></i>
                                                 </div>
