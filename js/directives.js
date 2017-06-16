@@ -64,7 +64,8 @@ angular.module('pkb.directives', [])
                 entity: '=',
                 quality: '=',
                 parts: '=',
-                homologs: '='
+                historical_homologs: '=',
+                serial_homologs: '='
             }
         }
     })

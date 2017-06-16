@@ -49,7 +49,12 @@
                                             </div>
                                             <div class="checkbox">
                                                 <label>
-                                                    <input type="checkbox" ng-model="filters.phenotypesTaxaIncludeHomologs"> Include homologous structures
+                                                    <input type="checkbox" ng-model="filters.phenotypesTaxaIncludeHistoricalHomologs"> Include historically homologous structures
+                                                </label>
+                                            </div>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" ng-model="filters.phenotypesTaxaIncludeSeriallyHomologs"> Include serially homologous structures
                                                 </label>
                                             </div>
                                         </div>
@@ -68,7 +73,7 @@
                                     <tr ng-repeat="taxon in taxaWithPhenotypes.results">
                                         <td><common-group taxon="taxon['@id']"></common-group></td>
                                         <td><a href="{{taxon['@id'] | linkToTaxon}}"><taxon-name iri="taxon['@id']"></taxon-name></a></td>
-                                        <td><a href="{{ {taxon: taxon, entity: {'@id': termID}, quality: filters.phenotypesQualityFilter, entity_parts: filters.phenotypesTaxaIncludeParts, entity_homologs: filters.phenotypesTaxaIncludeHomologs} | linkToTaxonPhenotypeProfile}}">View phenotypes <counted-phenotypes-for-taxon taxon="taxon" entity="{'@id': termID}" quality="filters.phenotypesQualityFilter" parts="filters.phenotypesTaxaIncludeParts" homologs="filters.phenotypesTaxaIncludeHomologs"/></a></td>
+                                        <td><a href="{{ {taxon: taxon, entity: {'@id': termID}, quality: filters.phenotypesQualityFilter, entity_parts: filters.phenotypesTaxaIncludeParts, entity_historical_homologs: filters.phenotypesTaxaIncludeHistoricalHomologs, entity_serial_homologs: filters.phenotypesTaxaIncludeSerialHomologs} | linkToTaxonPhenotypeProfile}}">View phenotypes <counted-phenotypes-for-taxon taxon="taxon" entity="{'@id': termID}" quality="filters.phenotypesQualityFilter" parts="filters.phenotypesTaxaIncludeParts" historical_homologs="filters.phenotypesTaxaIncludeHistoricalHomologs" serial_homologs="filters.phenotypesTaxaIncludeSerialHomologs"/></a></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -187,7 +192,12 @@
                                             </div>
                                             <div class="checkbox">
                                                 <label>
-                                                    <input type="checkbox" ng-model="phenotypeGenesSettings.includeHomologs"> Include homologous structures
+                                                    <input type="checkbox" ng-model="phenotypeGenesSettings.includeHistoricalHomologs"> Include historically homologous structures
+                                                </label>
+                                            </div>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" ng-model="phenotypeGenesSettings.includeSerialHomologs"> Include serially homologous structures
                                                 </label>
                                             </div>
                                         </div>
@@ -210,7 +220,7 @@
                             </table>
                         </div>
                         <pagination total-items="phenotypeGenesTotal.total" ng-model="phenotypeGenesPage" max-size="phenotypeGenesMaxSize" class="pagination-sm" boundary-links="true" rotate="false"  items-per-page="phenotypeGenesLimit" cg-busy="phenotypeGenesTotal.$promise" ng-change="phenotypeGenesPageChanged(phenotypeGenesPage)"></pagination>
-                        <p><label>Download all results:</label> <a class="btn btn-info btn-xs" target="_blank" href="http://kb.phenoscape.org/kb/gene/affecting_entity_phenotype?limit=0&amp;iri={{termID | encodeURI}}&amp;parts={{phenotypeGenesSettings.includeParts}}&amp;homologs={{phenotypeGenesSettings.includeHomologs}}{{(phenotypeGenesSettings.qualityFilter) ? '&amp;quality=' + phenotypeGenesSettings.qualityFilter['@id'] : ''}}" role="button">Text</a></p>
+                        <p><label>Download all results:</label> <a class="btn btn-info btn-xs" target="_blank" href="http://kb.phenoscape.org/kb/gene/affecting_entity_phenotype?limit=0&amp;iri={{termID | encodeURI}}&amp;parts={{phenotypeGenesSettings.includeParts}}&amp;historical_homologs={{phenotypeGenesSettings.includeHistoricalHomologs}}&amp;serial_homologs={{phenotypeGenesSettings.includeSerialHomologs}}{{(phenotypeGenesSettings.qualityFilter) ? '&amp;quality=' + phenotypeGenesSettings.qualityFilter['@id'] : ''}}" role="button">Text</a></p>
                     </tab>
                     <tab active="genesTabs.expression.active" select="activateGenesTab('expression')">
                         <tab-heading>Expression <span class="badge">{{expressionGenesTotal.total}} </span></tab-heading>

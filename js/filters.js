@@ -73,8 +73,11 @@ angular.module('pkb.filters', [])
           if (params.entity_parts) {
               urlParams.push("phenotypes.entity_parts=" + params.entity_parts)
           }
-          if (params.entity_homologs) {
-              urlParams.push("phenotypes.entity_homologs=" + params.entity_homologs)
+          if (params.entity_historical_homologs) {
+              urlParams.push("phenotypes.entity_historical_homologs=" + params.entity_historical_homologs)
+          }
+          if (params.entity_serial_homologs) {
+              urlParams.push("phenotypes.entity_serial_homologs=" + params.entity_serial_homologs)
           }
           return "#/taxon/" + $window.encodeURIComponent(params.taxon['@id']) + "?" + urlParams.join("&");
       };

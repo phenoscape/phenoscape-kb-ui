@@ -134,7 +134,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         phenotypesTaxonFilter: null,
         phenotypesQualityFilter: null,
         phenotypesTaxaIncludeParts: false,
-        phenotypesTaxaIncludeHomologs: false
+        phenotypesTaxaIncludeHistoricalHomologs: false,
+        phenotypesTaxaIncludeSerialHomologs: false
     };
     
     if ($routeParams['filters.phenotypesTaxonFilter']) {
@@ -150,8 +151,11 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     if ($routeParams['filters.phenotypesTaxaIncludeParts']) {
         $scope.filters.phenotypesTaxaIncludeParts = "true" === $routeParams['filters.phenotypesTaxaIncludeParts'];
     }
-    if ($routeParams['filters.phenotypesTaxaIncludeHomologs']) {
-        $scope.filters.phenotypesTaxaIncludeHomologs = "true" === $routeParams['filters.phenotypesTaxaIncludeHomologs'];
+    if ($routeParams['filters.phenotypesTaxaIncludeHistoricalHomologs']) {
+        $scope.filters.phenotypesTaxaIncludeHistoricalHomologs = "true" === $routeParams['filters.phenotypesTaxaIncludeHistoricalHomologs'];
+    }
+    if ($routeParams['filters.phenotypesTaxaIncludeSerialHomologs']) {
+        $scope.filters.phenotypesTaxaIncludeSerialHomologs = "true" === $routeParams['filters.phenotypesTaxaIncludeSerialHomologs'];
     }
 
     $scope.taxaWithPhenotypesPage = 1;
@@ -162,7 +166,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
             var params = {
                 entity: OMN.angled($scope.termID), 
                 parts: $scope.filters.phenotypesTaxaIncludeParts,
-                homologs: $scope.filters.phenotypesTaxaIncludeHomologs,
+                historical_homologs: $scope.filters.phenotypesTaxaIncludeHistoricalHomologs,
+                serial_homologs: $scope.filters.phenotypesTaxaIncludeSerialHomologs,
                 limit: $scope.taxaWithPhenotypesLimit, 
                 offset: ($scope.taxaWithPhenotypesPage - 1) * $scope.taxaWithPhenotypesLimit
             };
@@ -178,7 +183,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         var params = {
             entity: OMN.angled($scope.termID),
             parts: $scope.filters.phenotypesTaxaIncludeParts,
-            homologs: $scope.filters.phenotypesTaxaIncludeHomologs,
+            historical_homologs: $scope.filters.phenotypesTaxaIncludeHistoricalHomologs,
+            serial_homologs: $scope.filters.phenotypesTaxaIncludeSerialHomologs,
             total: true};
         if ($scope.filters.phenotypesTaxonFilter) {
             params.in_taxon = $scope.filters.phenotypesTaxonFilter['@id'];
@@ -189,7 +195,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         $scope.taxaWithPhenotypesTotal = TaxaWithPhenotype.query(params);
         $scope.taxaWithPhenotypesPageChanged(1);
     };
-    $scope.$watchGroup(['filters.phenotypesTaxonFilter', 'filters.phenotypesQualityFilter', 'filters.phenotypesTaxaIncludeParts', 'filters.phenotypesTaxaIncludeHomologs'], function (newValues, oldValues) {
+    $scope.$watchGroup(['filters.phenotypesTaxonFilter', 'filters.phenotypesQualityFilter', 'filters.phenotypesTaxaIncludeParts', 'filters.phenotypesTaxaIncludeHistoricalHomologs', 'filters.phenotypesTaxaIncludeSerialHomologs'], function (newValues, oldValues) {
         updateTaxaWithPhenotypeDownload();
         $scope.resetTaxaWithPhenotypes();
     });
@@ -214,11 +220,18 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
             $location.search('filters.phenotypesTaxaIncludeParts', null);
         }
     });
-    $scope.$watch('filters.phenotypesTaxaIncludeHomologs', function (value) {
-        if ($scope.filters.phenotypesTaxaIncludeHomologs) {
-            $location.search('filters.phenotypesTaxaIncludeHomologs', $scope.filters.phenotypesTaxaIncludeHomologs ? "true" : "false");
+    $scope.$watch('filters.phenotypesTaxaIncludeHistoricalHomologs', function (value) {
+        if ($scope.filters.phenotypesTaxaIncludeHistoricalHomologs) {
+            $location.search('filters.phenotypesTaxaIncludeHistoricalHomologs', $scope.filters.phenotypesTaxaIncludeHomologs ? "true" : "false");
         } else {
-            $location.search('filters.phenotypesTaxaIncludeHomologs', null);
+            $location.search('filters.phenotypesTaxaIncludeHistoricalHomologs', null);
+        }
+    });
+    $scope.$watch('filters.phenotypesTaxaIncludeSerialHomologs', function (value) {
+        if ($scope.filters.phenotypesTaxaIncludeSerialHomologs) {
+            $location.search('filters.phenotypesTaxaIncludeSerialHomologs', $scope.filters.phenotypesTaxaIncludeSerialHomologs ? "true" : "false");
+        } else {
+            $location.search('filters.phenotypesTaxaIncludeSerialHomologs', null);
         }
     });
     
@@ -235,8 +248,11 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         if ($scope.filters.phenotypesTaxaIncludeParts) {
             urlParams.push("parts=" + $scope.filters.phenotypesTaxaIncludeParts)
         }
-        if ($scope.filters.phenotypesTaxaIncludeHomologs) {
-            urlParams.push("homologs=" + $scope.filters.phenotypesTaxaIncludeHomologs)
+        if ($scope.filters.phenotypesTaxaIncludeHistoricalHomologs) {
+            urlParams.push("historical_homologs=" + $scope.filters.phenotypesTaxaIncludeHistoricalHomologs)
+        }
+        if ($scope.filters.phenotypesTaxaIncludeSerialHomologs) {
+            urlParams.push("serial_homologs=" + $scope.filters.phenotypesTaxaIncludeSerialHomologs)
         }
         $scope.linkToTaxaWithPhenotypeDownload = url + urlParams.join("&");
     }
@@ -294,7 +310,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.phenotypeGenesSettings = {};
     $scope.phenotypeGenesSettings.qualityFilter = null;
     $scope.phenotypeGenesSettings.includeParts = false;
-    $scope.phenotypeGenesSettings.includeHomologs = false;
+    $scope.phenotypeGenesSettings.includeHistoricalHomologs = false;
+    $scope.phenotypeGenesSettings.includeSerialHomologs = false;
     
     if ($routeParams['filters.genePhenotypesQualityFilter']) {
         Label.query({'iri': $routeParams['filters.genePhenotypesQualityFilter']}).$promise.then(function (response) {
@@ -304,8 +321,11 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     if ($routeParams['filters.genePhenotypesIncludeParts']) {
         $scope.phenotypeGenesSettings.includeParts = "true" === $routeParams['filters.genePhenotypesIncludeParts'];
     }
-    if ($routeParams['filters.genePhenotypesIncludeHomologs']) {
-        $scope.phenotypeGenesSettings.includeHomologs = "true" === $routeParams['filters.genePhenotypesIncludeHomologs'];
+    if ($routeParams['filters.genePhenotypesIncludeHistoricalHomologs']) {
+        $scope.phenotypeGenesSettings.includeHistoricalHomologs = "true" === $routeParams['filters.genePhenotypesIncludeHistoricalHomologs'];
+    }
+    if ($routeParams['filters.genePhenotypesIncludeSerialHomologs']) {
+        $scope.phenotypeGenesSettings.includeSerialHomologs = "true" === $routeParams['filters.genePhenotypesIncludeSerialHomologs'];
     }
     
     $scope.phenotypeGenesPageChanged = function (newPage) {
@@ -315,7 +335,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
                 limit: $scope.phenotypeGenesLimit,
                 offset: ($scope.phenotypeGenesPage - 1) * $scope.phenotypeGenesLimit,
                 parts: $scope.phenotypeGenesSettings.includeParts,
-                homologs: $scope.phenotypeGenesSettings.includeHomologs
+                historical_homologs: $scope.phenotypeGenesSettings.includeHistoricalHomologs,
+                serial_homologs: $scope.phenotypeGenesSettings.includeSerialHomologs,
             };
         if ($scope.phenotypeGenesSettings.qualityFilter) {
             params.quality = $scope.phenotypeGenesSettings.qualityFilter['@id'];
@@ -327,7 +348,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
                 iri: $scope.termID,
                 total: true,
                 parts: $scope.phenotypeGenesSettings.includeParts,
-                homologs: $scope.phenotypeGenesSettings.includeHomologs
+                historical_homologs: $scope.phenotypeGenesSettings.includeHistoricalHomologs,
+                serial_homologs: $scope.phenotypeGenesSettings.includeSerialHomologs
         };
         if ($scope.phenotypeGenesSettings.qualityFilter) {
             params.quality = $scope.phenotypeGenesSettings.qualityFilter['@id'];
@@ -347,7 +369,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         $scope.expressionGenesPageChanged(1);
     };
     
-    $scope.$watchGroup(['phenotypeGenesSettings.qualityFilter', 'phenotypeGenesSettings.includeParts', 'phenotypeGenesSettings.includeHomologs'], function (newValues, oldValues) {
+    $scope.$watchGroup(['phenotypeGenesSettings.qualityFilter', 'phenotypeGenesSettings.includeParts', 'phenotypeGenesSettings.includeHistoricalHomologs', 'phenotypeGenesSettings.includeSerialHomologs'], function (newValues, oldValues) {
         updateTaxaWithPhenotypeDownload();//FIXME
         $scope.resetPhenotypeGenes();
     });
@@ -365,11 +387,18 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
             $location.search('filters.genePhenotypesIncludeParts', null);
         }
     });
-    $scope.$watch('phenotypeGenesSettings.includeHomologs', function (value) {
-        if ($scope.phenotypeGenesSettings.includeHomologs) {
-            $location.search('filters.genePhenotypesIncludeHomologs', $scope.phenotypeGenesSettings.includeHomologs ? "true" : "false");
+    $scope.$watch('phenotypeGenesSettings.includeHistoricalHomologs', function (value) {
+        if ($scope.phenotypeGenesSettings.includeHistoricalHomologs) {
+            $location.search('filters.genePhenotypesIncludeHistoricalHomologs', $scope.phenotypeGenesSettings.includeHistoricalHomologs ? "true" : "false");
         } else {
-            $location.search('filters.genePhenotypesIncludeHomologs', null);
+            $location.search('filters.genePhenotypesIncludeHistoricalHomologs', null);
+        }
+    });
+    $scope.$watch('phenotypeGenesSettings.includeSerialHomologs', function (value) {
+        if ($scope.phenotypeGenesSettings.includeSerialHomologs) {
+            $location.search('filters.genePhenotypesIncludeSerialHomologs', $scope.phenotypeGenesSettings.includeSerialHomologs ? "true" : "false");
+        } else {
+            $location.search('filters.genePhenotypesIncludeSerialHomologs', null);
         }
     });
     
@@ -386,7 +415,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         phenotypesQualityFilter: null,
         quality_type: null,
         phenotypesEntityIncludeParts: false,
-        phenotypesEntityIncludeHomologs: false
+        phenotypesEntityIncludeHistoricalHomologs: false,
+        phenotypesEntityIncludeSerialHomologs: false
     };
     if ($routeParams['phenotypes.entity']) {
         Label.query({'iri': $routeParams['phenotypes.entity']}).$promise.then(function (response) {
@@ -406,8 +436,11 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     if ($routeParams['phenotypes.entity_parts']) {
         $scope.filters.phenotypesEntityIncludeParts = "true" === $routeParams['phenotypes.entity_parts'];
     }
-    if ($routeParams['phenotypes.entity_homologs']) {
-        $scope.filters.phenotypesEntityIncludeHomologs = "true" === $routeParams['phenotypes.entity_homologs'];
+    if ($routeParams['phenotypes.entity_historical_homologs']) {
+        $scope.filters.phenotypesEntityIncludeHistoricalHomologs = "true" === $routeParams['phenotypes.entity_historical_homologs'];
+    }
+    if ($routeParams['phenotypes.entity_serial_homologs']) {
+        $scope.filters.phenotypesEntityIncludeSerialHomologs = "true" === $routeParams['phenotypes.entity_serial_homologs'];
     }
     $scope.autocompleteEntity = function (text) {
         return OntologyTermSearch.query({
@@ -437,7 +470,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         var params = {
             taxon: $scope.taxonID, 
             parts: $scope.filters.phenotypesEntityIncludeParts,
-            homologs: $scope.filters.phenotypesEntityIncludeHomologs,
+            historical_homologs: $scope.filters.phenotypesEntityIncludeHistoricalHomologs,
+            serial_homologs: $scope.filters.phenotypesEntityIncludeSerialHomologs,
             limit: $scope.phenotypeProfileLimit, 
             offset: ($scope.phenotypeProfilePage - 1) * $scope.phenotypeProfileLimit
         };
@@ -468,7 +502,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
         var params = {
             taxon: $scope.taxonID, 
             parts: $scope.filters.phenotypesEntityIncludeParts,
-            homologs: $scope.filters.phenotypesEntityIncludeHomologs,
+            historical_homologs: $scope.filters.phenotypesEntityIncludeHistoricalHomologs,
+            serial_homologs: $scope.filters.phenotypesEntityIncludeSerialHomologs,
             total: true};
         if ($scope.filters.quality_type == 'quality-phenotype') {
             if ($scope.filters.phenotypesEntityFilter) {
@@ -515,7 +550,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     }
     $scope.resetPhenotypeProfile();
     
-    $scope.$watchGroup(['filters.phenotypesEntityFilter', 'filters.phenotypesQualityFilter', 'filters.quality_type', 'filters.phenotypesEntityIncludeParts', 'filters.phenotypesEntityIncludeHomologs'], function (value) {
+    $scope.$watchGroup(['filters.phenotypesEntityFilter', 'filters.phenotypesQualityFilter', 'filters.quality_type', 'filters.phenotypesEntityIncludeParts', 'filters.phenotypesEntityIncludeHistoricalHomologs', 'filters.phenotypesEntityIncludeSerialHomologs'], function (value) {
         $scope.resetPhenotypeProfile();
     });
     $scope.$watch('filters.phenotypesEntityFilter', function (value) {
@@ -538,8 +573,11 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     $scope.$watch('filters.phenotypesEntityIncludeParts', function (value) {
         $location.search('phenotypes.entity_parts', $scope.filters.phenotypesEntityIncludeParts ? "true" : "false");
     });
-    $scope.$watch('filters.phenotypesEntityIncludeHomologs', function (value) {
-        $location.search('phenotypes.entity_homologs', $scope.filters.phenotypesEntityIncludeHomologs ? "true" : "false");
+    $scope.$watch('filters.phenotypesEntityIncludeHistoricalHomologs', function (value) {
+        $location.search('phenotypes.entity_historical_homologs', $scope.filters.phenotypesEntityIncludeHistoricalHomologs ? "true" : "false");
+    });
+    $scope.$watch('filters.phenotypesEntityIncludeSerialHomologs', function (value) {
+        $location.search('phenotypes.entity_serial_homologs', $scope.filters.phenotypesEntityIncludeSerialHomologs ? "true" : "false");
     });
     
     $scope.variationProfilePage = 1;
@@ -1149,7 +1187,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     params.taxon = $scope.taxon['@id'];
     params.entity = OMN.angled($scope.entity['@id']);
     params.parts = $scope.parts;
-    params.homologs = $scope.homologs;
+    params.historical_homologs = $scope.historical_homologs;
+    params.serial_homologs = $scope.serial_homologs;
     if ($scope.quality) {
         params.quality = OMN.angled($scope.quality['@id']);
     }
