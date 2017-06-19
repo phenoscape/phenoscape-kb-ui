@@ -59,10 +59,10 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
       );
     };
 })
-.controller('EntityController', function ($scope, $routeParams, $location, $window, Term, TaxaWithPhenotype, EntityPresence, EntityAbsence, EntityPhenotypeGenes, EntityExpressionGenes, OntologyTermSearch, Vocab, OMN, TaxonPhenotypesQuery, Label, APIroot) {
+.controller('EntityController', function ($scope, $routeParams, $location, $window, Term, TaxaWithPhenotype, EntityPresence, EntityAbsence, EntityPhenotypeGenes, EntityExpressionGenes, OntologyTermSearch, Vocab, OMN, TaxonPhenotypesQuery, Label, HomologyAnnotations, APIroot) {
     $scope.termID = $routeParams.term;
     $scope.term = Term.query({'iri': $scope.termID});
-    
+    $scope.homologyAnnotations = HomologyAnnotations.query({'entity': $scope.termID})
     $scope.tabs = {
         properties: {active: true},
         taxa: {active: false},

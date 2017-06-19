@@ -11,6 +11,17 @@ angular.module('pkb.filters', [])
           return "<" + uri + ">";
       };
 })
+.filter('homologyRelation', function () {
+      return function (uri) {
+          if (uri === "http://purl.obolibrary.org/obo/RO_HOM0000007") {
+              return "homologous to";
+          } else if (uri === "http://purl.obolibrary.org/obo/RO_HOM0000027") {
+              return "serially homologous to";
+          } else {
+              return uri;
+          }
+      };
+})
 .filter('linkToEntity', function ($window) {
       return function (uri) {
           return "#/entity/" + $window.encodeURIComponent(uri);

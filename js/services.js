@@ -334,4 +334,11 @@ angular.module('pkb.services', ['ngResource'])
                 method: 'GET',
                 headers: {'Accept': 'application/json'}
         }})
+    })
+    .factory('HomologyAnnotations', function ($resource, APIroot) {
+        return $resource(APIroot + '/entity/homology', {}, {
+            query: {
+                method: 'GET',
+                headers: {'Accept': 'application/json'}
+        }})
     });
