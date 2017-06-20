@@ -15,13 +15,11 @@
                                     <li ng-repeat="rel in term.relationships" ng-show="rel.value['@id'] | isEntity"><em>{{rel.property.label}}</em>: <a href="{{rel.value['@id'] | linkToEntity}}">{{rel.value.label}}</a></li>
                                 </ul>
                                 <div class="panel panel-default" ng-show="homologyAnnotations.results.length > 0">
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">Homology annotations</h4>
-                                      </div>
+                                    <div class="panel-heading">Homology annotations</div>
                                     <div class="panel-body">
                                         <ul class="list-unstyled">
                                             <li ng-repeat="ann in homologyAnnotations.results">
-                                                {{term.label}} in <a href="{{ann.subjectTaxon | linkToTaxon}}"><taxon-name iri="ann.subjectTaxon"></taxon-name></a> <em>{{ann.relation|homologyRelation}}</em> <a href="{{ann.object | linkToEntity}}"><term-name iri="ann.object"></term-name></a> in <a href="{{ann.objectTaxon | linkToTaxon}}"><taxon-name iri="ann.objectTaxon"></taxon-name></a> ({{ann.source}}: <a href="{{ann.evidence}}"><term-name iri="ann.evidence"></term-name></a>)
+                                                {{term.label}} in <a href="{{ann.subjectTaxon | linkToTaxon}}"><taxon-name iri="ann.subjectTaxon"></taxon-name></a> <em ng-show="ann.negated"><b>not</b></em> <em>{{ann.relation|homologyRelation}}</em> <a href="{{ann.object | linkToEntity}}"><term-name iri="ann.object"></term-name></a> in <a href="{{ann.objectTaxon | linkToTaxon}}"><taxon-name iri="ann.objectTaxon"></taxon-name></a> ({{ann.source}}: <a href="{{ann.evidence}}"><term-name iri="ann.evidence"></term-name></a>)
                                             </li>
                                         </ul>
                                     </div>
