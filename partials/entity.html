@@ -10,8 +10,8 @@
                             <div class="col-sm-4">
                                 <classification iri="termID" defined-by="http://purl.obolibrary.org/obo/uberon.owl" link-filter="linkToEntity"></classification>
                             </div>
-                            <div class="col-sm-8" style="border-left: 1px solid #ddd" ng-show="term.relationships.length > 0">
-                                <ul class="list-unstyled">
+                            <div class="col-sm-8" style="border-left: 1px solid #ddd">
+                                <ul class="list-unstyled" ng-show="term.relationships.length > 0">
                                     <li ng-repeat="rel in term.relationships" ng-show="rel.value['@id'] | isEntity"><em>{{rel.property.label}}</em>: <a href="{{rel.value['@id'] | linkToEntity}}">{{rel.value.label}}</a></li>
                                 </ul>
                                 <div class="panel panel-default" ng-show="homologyAnnotations.results.length > 0">
