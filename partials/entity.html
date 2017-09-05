@@ -34,9 +34,8 @@
                     <tab active="taxaTabs.phenotypes.active" select="activateTaxaTab('phenotypes')">
                         <tab-heading>Phenotypes <span class="badge">{{taxaWithPhenotypesTotal.total}} </span></tab-heading>
                         <div class="panel panel-default top-buffer">
-                            <div class="panel-heading"><h4>Taxa exhibiting phenotypes for {{term.label}}</h4></div>
+                            <div class="panel-heading"><h4>Taxa exhibiting phenotypes for {{term.label}} <span popover="This query uses inference to find taxa annotated with phenotypes pertaining to {{term.label}}." popover-trigger="mouseenter" popover-placement="bottom" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></h4></div>
                             <div class="panel-body">
-                                <p>This query uses inference to find taxa annotated with phenotypes pertaining to <mark>{{term.label}}</mark>.</p>
                                 <div class="well">
                                     <form class="form-inline">
                                         <div class="form-group" ng-class="{'has-success': filters.phenotypesTaxonFilter, 'has-feedback': filters.phenotypesTaxonFilter}">
@@ -97,9 +96,8 @@
                     <tab active="taxaTabs.presence.active" select="activateTaxaTab('presence')">
                         <tab-heading>Presence <span class="badge">{{taxaWithPresenceTotal.total}} </span></tab-heading>
                         <div class="panel panel-default top-buffer">
-                            <div class="panel-heading"><h4>Taxa exhibiting presence of {{term.label}}</h4></div>
+                            <div class="panel-heading"><h4>Taxa exhibiting presence of {{term.label}} <span popover="This query uses inference to determine if any character states entail the presence of {{term.label}} in a given taxon." popover-trigger="mouseenter" popover-placement="bottom" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></h4></div>
                             <div class="panel-body">
-                                <p>This query uses inference to determine if any character states entail the presence of <mark>{{term.label}}</mark> in a given taxon.</p>
                                 <div class="well">
                                     <form class="form-inline">
                                         <div class="form-group" ng-class="{'has-success': filters.presenceTaxonFilter, 'has-feedback': filters.presenceTaxonFilter}">
@@ -137,9 +135,8 @@
                     <tab active="taxaTabs.absence.active" select="activateTaxaTab('absence')">
                         <tab-heading>Absence <span class="badge">{{taxaWithAbsenceTotal.total}} </span></tab-heading>
                         <div class="panel panel-default top-buffer">
-                            <div class="panel-heading"><h4>Taxa exhibiting absence of {{term.label}}</h4></div>
+                            <div class="panel-heading"><h4>Taxa exhibiting absence of {{term.label}} <span popover="This query uses inference to determine if any character states entail the absence of {{term.label}} in a given taxon." popover-trigger="mouseenter" popover-placement="bottom" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></h4></div>
                             <div class="panel-body">
-                                <p>This query uses inference to determine if any character states entail the absence of <mark>{{term.label}}</mark> in a given taxon.</p>
                                 <div class="well">
                                     <form class="form-inline">
                                         <div class="form-group" ng-class="{'has-success': filters.absenceTaxonFilter, 'has-feedback': filters.absenceTaxonFilter}">
@@ -182,10 +179,9 @@
                         <tab-heading>Phenotypes <span class="badge">{{phenotypeGenesTotal.total}} </span></tab-heading>
                         <div class="panel panel-default top-buffer">
                             <div class="panel-heading">
-                                <h4>Genes affecting phenotypes for this structure</h4>
+                                <h4>Genes affecting phenotypes for this structure <span popover="These genes have been annotated with phenotypes affecting {{term.label}} (directly or via inference)." popover-trigger="mouseenter" popover-placement="bottom" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></h4>
                             </div>
                             <div class="panel-body">
-                                <p>These genes have been annotated with phenotypes affecting <mark>{{term.label}}</mark> (directly or via inference).</p>
                                 <div class="well">
                                     <form class="form-inline">
                                         <div class="form-group" ng-class="{'has-success': phenotypeGenesSettings.qualityFilter, 'has-feedback': phenotypeGenesSettings.qualityFilter}">
@@ -236,10 +232,9 @@
                         <tab-heading>Expression <span class="badge">{{expressionGenesTotal.total}} </span></tab-heading>
                         <div class="panel panel-default top-buffer">
                             <div class="panel-heading">
-                                <h4>Genes expressed within this structure</h4>
+                                <h4>Genes expressed within this structure <span popover="These genes have been annotated with expression locations within any part of {{term.label}} (directly or via inference)." popover-trigger="mouseenter" popover-placement="bottom" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></h4>
                             </div>
                             <div class="panel-body">
-                                <p>These genes have been annotated with expression locations within any part of <mark>{{term.label}}</mark> (directly or via inference).</p>
                             </div>
                             <table class="table table-condensed table-striped" cg-busy="expressionGenes.$promise">
                                 <thead>

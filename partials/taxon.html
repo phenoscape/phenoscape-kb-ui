@@ -14,10 +14,9 @@
                 <tab-heading>Phenotypes <span class="badge">{{phenotypeProfileTotal.total}} </span></tab-heading>
                 <div class="panel panel-default top-buffer">
                     <div class="panel-heading">
-                        <h4>Phenotypes directly annotated to this taxon</h4>
+                        <h4>Phenotypes directly annotated to this taxon <span popover="These phenotypes have been annotated from character states directly associated with {{taxon.label}} in source data." popover-trigger="mouseenter" popover-placement="bottom" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></h4>
                     </div>
                     <div class="panel-body">
-                        <p>These phenotypes have been annotated from character states directly associated with <mark>{{taxon.label}}</mark> in source data.</p>
                         <div class="well">
                             <form class="form-inline">
                                 <div class="form-group" ng-class="{'has-success': filters.phenotypesEntityFilter, 'has-feedback': filters.phenotypesEntityFilter}">
@@ -95,10 +94,9 @@
                 <tab-heading>Variation profile <span class="badge">{{variationProfileTotal.total}} </span></tab-heading>
                 <div class="panel panel-default top-buffer">
                     <div class="panel-heading">
-                        <h4>Phenotypes varying among immediate children of this taxon</h4>
+                        <h4>Phenotypes varying among immediate children of this taxon <span popover="These phenotypes have been associated with the variation profile of {{taxon.label}} using an ancestral state reconstruction method." popover-trigger="mouseenter" popover-placement="bottom" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></h4>
                     </div>
                     <div class="panel-body">
-                        <p>These phenotypes have been associated with the variation profile of <mark>{{taxon.label}}</mark> using an ancestral state reconstruction method.</p>
                     </div>
                     <table class="table table-condensed table-striped" cg-busy="variationProfile.$promise">
                         <thead>
