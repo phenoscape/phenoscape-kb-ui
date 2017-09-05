@@ -7,10 +7,9 @@
                 <tab-heading>Phenotypes <span class="badge">{{phenotypes.results.length}}</span></tab-heading>
                 <div class="panel panel-default top-buffer">
                     <div class="panel-heading">
-                        <h4>Phenotypes associated with {{gene.label}}</h4>
+                        <h4>Phenotypes associated with {{gene.label}} <span popover="These phenotypes have been directly annotated to {{gene.label}}." popover-trigger="mouseenter" popover-placement="bottom" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></h4>
                     </div>
                     <div class="panel-body">
-                        <p>These phenotypes have been directly annotated to <mark>{{gene.label}}</mark>.</p>
                     </div>
                     <table class="table table-condensed table-striped" cg-busy="phenotypes.$promise">
                         <thead>
@@ -34,10 +33,9 @@
                 <tab-heading>Expression <span class="badge">{{expression.results.length}}</span></tab-heading>
                 <div class="panel panel-default top-buffer">
                     <div class="panel-heading">
-                        <h4>Expression locations associated with {{gene.label}}</h4>
+                        <h4>Expression locations associated with {{gene.label}} <span popover="{{gene.label}} has been annotated to have expression within these anatomical structures." popover-trigger="mouseenter" popover-placement="bottom" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></h4>
                     </div>
                     <div class="panel-body">
-                        <p><mark>{{gene.label}}</mark> has been annotated to have expression within these anatomical structures.</p>
                     </div>
                     <table class="table table-condensed table-striped" cg-busy="expression.$promise">
                         <thead>
