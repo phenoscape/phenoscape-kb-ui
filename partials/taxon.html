@@ -116,6 +116,7 @@
                 <pagination total-items="variationProfileTotal.total" ng-model="variationProfilePage" max-size="variationProfileMaxSize" class="pagination-sm" boundary-links="true" rotate="false"  items-per-page="variationProfileLimit" cg-busy="variationProfileTotal.$promise" ng-change="variationProfilePageChanged(variationProfilePage)"></pagination>
             </tab>
             <tab heading="Similar gene phenotypes" active="tabs.similarity.active" select="activateTab('similarity')">
+                <p class="top-buffer">These genes have phenotypic profiles (that result when the action of the gene is disrupted) that match most closely to the phenotypic variation within this taxonomic group.</p>
                 <taxon-similarity-view subject="taxon" corpus-graph="http://kb.phenoscape.org/sim/genes" query-graph="http://kb.phenoscape.org/sim/taxa"></taxon-similarity-view>
             </tab>
         </tabset>
