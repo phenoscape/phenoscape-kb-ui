@@ -222,7 +222,7 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     });
     $scope.$watch('filters.phenotypesTaxaIncludeHistoricalHomologs', function (value) {
         if ($scope.filters.phenotypesTaxaIncludeHistoricalHomologs) {
-            $location.search('filters.phenotypesTaxaIncludeHistoricalHomologs', $scope.filters.phenotypesTaxaIncludeHomologs ? "true" : "false");
+            $location.search('filters.phenotypesTaxaIncludeHistoricalHomologs', $scope.filters.phenotypesTaxaIncludeHistoricalHomologs ? "true" : "false");
         } else {
             $location.search('filters.phenotypesTaxaIncludeHistoricalHomologs', null);
         }
