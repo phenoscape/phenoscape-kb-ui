@@ -1187,8 +1187,8 @@ angular.module('pkb.controllers', ['ui.bootstrap'])
     params.taxon = $scope.taxon['@id'];
     params.entity = OMN.angled($scope.entity['@id']);
     params.parts = $scope.parts;
-    params.historical_homologs = $scope.historical_homologs;
-    params.serial_homologs = $scope.serial_homologs;
+    params.historical_homologs = $scope.historicalHomologs;
+    params.serial_homologs = $scope.serialHomologs;
     if ($scope.quality) {
         params.quality = OMN.angled($scope.quality['@id']);
     }
