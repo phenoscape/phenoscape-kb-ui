@@ -3,7 +3,7 @@
 /* Services */
 
 angular.module('pkb.services', ['ngResource'])
-	.constant('APIroot', 'http://kb.phenoscape.org/api')
+	.constant('APIroot', 'https://kb.phenoscape.org/api')
 	.factory('EntityPresence', function ($resource, APIroot) {
 		return $resource(APIroot + '/entity/presence', {}, {
 			query: {
